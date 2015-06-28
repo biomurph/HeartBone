@@ -60,7 +60,7 @@ That is the port you want to connect to. Count the ports available starting from
 
 Even if the program starts up, if you may find your Heart Bone unresponsive. If that happens, this is a good place to start debugging. Some ports can pretend to be a Heart Bone...
 
-If you have your Heart Bone connected correctly and the software is running, you can fine a command cheat sheet [here](http://).
+If you have your Heart Bone connected correctly and the software is running, you can fine a command cheat sheet [here](https://github.com/biomurph/HeartBone/blob/master/CheatSheet.md).
 
 
 
