@@ -24,6 +24,11 @@ The enclosed folder called HeartBone contains a Processing sketch and the curren
 If the Processing folder has not been made yet, go ahead and make it.
 
 ##Connect To Your Heart Bone
+
+There are 4 buttons on your Heart Bone, Refer to this image to find the locations of the buttons.
+
+![ScreenShot](images/ScreenShot.jpg)
+
 Start the Processing application, and open the Heart Bone program by clicking on 
 
 		File->Sketchbook->HeartBone
@@ -31,6 +36,13 @@ Start the Processing application, and open the Heart Bone program by clicking on
 It will open a window that looks like this
 
 ![image](images/HB-Open.png)
+
+Plug your Heart Bone into the USB cable. If you see a red LED light up, you know the battery is being charged. 
+**Make Sure The Heart Bone Is Awake** by pressing the wake button (upper right when viewed Polaroid style)
+Then, launch the program by pressing the play button in Processing
+
+
+
 
 
 
