@@ -8,7 +8,7 @@ The enclosed softawre connects with your Hear Bone via USB cable, and allows you
 
 ### FTDI Driver 
 
-You need a Future Technology Devices (FTDI) driver on your computer if you don't already have one. This tool allows your computer to talk to the Heart Bone through a Virtual COM Port (VCP). Use [this](http://www.ftdichip.com/Drivers/VCP.htm) link the find the correct driver for your operating system, and install it now. It will take n minutes.
+You need a Future Technology Devices International (FTDI) driver on your computer if you don't already have one. This tool allows your computer to talk to the Heart Bone through a Virtual COM Port (VCP). Use [this](http://www.ftdichip.com/Drivers/VCP.htm) link the find the correct driver for your operating system, and install it now. It will take n minutes.
 
 
 ### Processing
