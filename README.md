@@ -41,13 +41,13 @@ Plug your Heart Bone into the USB cable. If you see a red LED light up, you know
 **Make Sure The Heart Bone Is Awake** by pressing the wake button
 Then, launch the program by pressing the play button in Processing
 
-![playbutton](images/playButton.png)
+![playbutton](images/PlayButton.png)
 
 ###Connect to the right Serial Port!
 
 This is where things get tedious, but it's a simple process. When you play the sketch in processing, one of the first things it does is to try to connect to the Heart Bone, if it can't connect, you will get an error that looks like this
 
-![image](images/serialPortError.png)
+![image](images/SerialPortError.png)
 
 If this happens, take a look at the white on black text at the bottom of the window. There is a list of all available ports on your computer. The Heart Bone is among them. Look for the port calle 
 
@@ -55,7 +55,7 @@ If this happens, take a look at the white on black text at the bottom of the win
 	
 That is the port you want to connect to. Count the ports available starting from 0, and put that number in the highlighted code as shown below
 
-![image](images/portNumber.png)
+![image](images/PortNumber.png)
 
 Even if the program starts up, if you may find your Heart Bone unresponsive, this is a good place to start debugging.
 
