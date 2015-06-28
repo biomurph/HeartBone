@@ -82,12 +82,12 @@ The Heart Bone should be awake befrore connecting to any control software.
 
 ## Keyboard Commands
 
-When you start the Heart Bone software and connect you will see a window that looks liek this
+When you start the Heart Bone software and connect you will see a window that looks like this
 
 ![SketchScreenShot](images/SketchScreenShot.png)
 
 Almost all of the keyboard commands are shown, but hey, we're still in beta..
-The program window contains information about gifs stored on the Heart Bone, and givs stored on the computer. The image on the upper left is of a gif stored on the computer. You can scroll all the gifs stored on the computer by using the UP and DOWN keys. Use the following keys to control the Heart Bone. 
+The program window contains information about gifs stored on the Heart Bone, and gifs stored on the computer. The image on the upper left is of a gif stored on the computer. You can scroll all the gifs stored on the computer by using the UP and DOWN keys. Use the following keys to control the Heart Bone. 
 
 ### p
 *	Press 'p' to animate the gif in the upper left
@@ -100,7 +100,7 @@ The program window contains information about gifs stored on the Heart Bone, and
 	*	This is useful for debugging 
 
 ### a or A
-*	These keys convert the gif image to BLACK and WHITE, and loads it to your Heart Bone. The program reads the color of the FIRST pixel (upper-left-most pixel)of the FIRST gif and uses that as the background color for ALL of the frames in the gif. Pressing 'a' reads the background as BLACK. Pressing 'A' reads the background as WHITE. This works well with most gifs that have a consistent background color, like KOI.gif. Or ones that have an animation that changes the pixel color at the upper left corner of the screen, like Spiraltorustorso.gif 
+*	These keys convert the gif image to BLACK and WHITE, and loads it to your Heart Bone. The program reads the color of the FIRST pixel (upper-left-most pixel)of the FIRST gif and uses that as the background color for ALL of the frames in the gif. Pressing 'a' reads the background as BLACK. Pressing 'A' reads the background as WHITE. This works well with most gifs that have a consistent background color, like KOI.gif. Or gifs that have an animation that changes the pixel color at the upper left corner of the screen, like Spiraltorustorso.gif 
 
 ### b or B
 *	These keys convert the gif image to BLACK and WHITE, and loads it to your Heart Bone. The program reads the color of the first pixel of EVERY gif frame (upper-left-most pixel) and uses that as the background color FOR THAT FRAME.This is useful if you have a gif with changing background like explode.gif or fiercingHeart.gif
