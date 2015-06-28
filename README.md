@@ -88,10 +88,6 @@ When you start the Heart Bone software and connect you will see a window that lo
 
 The program window contains information about gifs stored on the Heart Bone, and givs stored on the computer. The image on the upper left is of a gif stored on the computer. You can scroll all the gifs stored on the computer by using the UP and DOWN keys. Use the following keys to control the Heart Bone. 
 
-The program window contains information about gifs stored on the Heart Bone, and gifs stored on the computer. The image on the upper left is of a gif stored on the computer. You can scroll all the gifs stored on the computer by using the UP and DOWN keys. Use the following keys to control the Heart Bone. 
-
-**Note:** *If you navigate away from the Sketch window while a gif upload is taking place, the frame being loaded will contain a glitch, and not a pretty or cool glitch. This is on the list of future fixes.*
-
 ### p
 *	Press 'p' to animate the gif in the upper left
 
@@ -105,8 +101,14 @@ The program window contains information about gifs stored on the Heart Bone, and
 ### a or A
 *	These keys convert the gif image to BLACK and WHITE, and loads it to your Heart Bone. The program reads the color of the FIRST pixel (upper-left-most pixel)of the FIRST gif and uses that as the background color for ALL of the frames in the gif. Pressing 'a' reads the background as BLACK. Pressing 'A' reads the background as WHITE. This works well with most gifs that have a consistent background color, like KOI.gif. Or gifs that have an animation that changes the pixel color at the upper left corner of the screen, like Spiraltorustorso.gif 
 
+**Note:** *If you navigate away from the Sketch window while a gif upload is taking place, the frame being loaded will contain a glitch, and not a pretty or cool glitch. This is on the list of future fixes.*
+
+
 ### b or B
 *	These keys convert the gif image to BLACK and WHITE, and loads it to your Heart Bone. The program reads the color of the first pixel of EVERY gif frame (upper-left-most pixel) and uses that as the background color FOR THAT FRAME.This is useful if you have a gif with changing background like explode.gif or fiercingHeart.gif
+
+**Note:** *If you navigate away from the Sketch window while a gif upload is taking place, the frame being loaded will contain a glitch, and not a pretty or cool glitch. This is on the list of future fixes.*
+
 
 ### E
 *	press E to erase all of the stored gifs on your Heart Bone. Heart Bone has room for up to 100 gif frames. They can be divided into up to 9 gifs (this is arbitrary and can change). If you try to load a gif with more frames than are available, you will get an error message in the Sketch window. 
