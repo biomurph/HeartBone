@@ -83,7 +83,7 @@ void setup() {
 
   getCurrentGif(gifNumber);
 
-  sendStartText();  // show prompts on console
+//  sendStartText();  // show prompts on console
   background(bgrnd);  //
   updateText();    // print commands and currentGif info to screen
   bone.write('0');
@@ -127,6 +127,22 @@ void draw() {
       sendingFrame = false;
     }
   }
+
+//  if(sendingFrame){
+//    for (int i=0; i<picData.length; i++){
+//      bone.write(picData[byteCounter]);
+////      byteCounter++;
+//      delay(5);
+//      if(i == 1){scroll();}
+//      if(i%128 == 0){
+//        println(i + " bytes sent");
+//        scroll();
+//      }
+////    if(byteCounter == picData.length){
+////      sendingFrame = false;
+//    }
+//    sendingFrame = false;
+//  }
 
   eventSerial();
 
@@ -186,16 +202,16 @@ void bufferImage(){  // arrange bitmap for transfer
 }
 
 
-void sendStartText(){
-  println("GIF has "+gifFrames.length + " frames");
-  println("press 'p' to toggle gif animation on/off");
-  println("press 'l' to advance one frame with rollover");
-  println("press 'P' to print the frame displayed to console in 1s and 0s");
-  println("Press 'a' to initiate gif load pixel True");
-  println("Press 'E' to erase the EEPROM");
-  println("Press 'A' to initiate gif load pixel inverted");
-  println("Contents of EEPROM:\n");
-}
+//void sendStartText(){
+//  println("GIF has "+gifFrames.length + " frames");
+//  println("press 'p' to toggle gif animation on/off");
+//  println("press 'l' to advance one frame with rollover");
+//  println("press 'P' to print the frame displayed to console in 1s and 0s");
+//  println("Press 'a' to initiate gif load pixel True");
+//  println("Press 'E' to erase the EEPROM");
+//  println("Press 'A' to initiate gif load pixel inverted");
+//  println("Contents of EEPROM:\n");
+//}
 
 void updateText(){
   fill(txtFill);
@@ -205,10 +221,10 @@ void updateText(){
   text(gifName,10,120);
   text("press 'p' to toggle gif animation on/off",lineStart,(textLine+=lineHeight));
   text("press 'l' to advance gif one frame with rollover",lineStart,(textLine+=lineHeight));
-  text("Press 'a' to start gif xfer pixel True",lineStart,(textLine+=lineHeight));
-  text("Press 'A' to start gif xfer pixel Inverted",lineStart,(textLine+=lineHeight));
-  text("Press 'b' to start gif xfer with background set for each frame, pixel True",lineStart,(textLine+=lineHeight));
-  text("Press 'B' to start gif xfer with background set for each frame, pixel Inverted",lineStart,(textLine+=lineHeight));
+  text("Press 'a' to start gif xfer with BLACK background",lineStart,(textLine+=lineHeight));
+  text("Press 'A' to start gif xfer with WHITE background",lineStart,(textLine+=lineHeight));
+  text("Press 'b' to start gif xfer with background set for each frame, BLACK",lineStart,(textLine+=lineHeight));
+  text("Press 'B' to start gif xfer with background set for each frame, WHITE",lineStart,(textLine+=lineHeight));
   text("Press 'E' to erase the EEPROM. No turning back.",lineStart,(textLine+=lineHeight));
   text("Press '1' - '9' to play stored gifs",lineStart,(textLine+=lineHeight));
   textLine+=lineHeight;  // add a space

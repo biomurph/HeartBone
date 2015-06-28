@@ -46,7 +46,7 @@ void readButtons(){
          buttonPressed[1] = false;
          sleepyBytes[0] = 0x88;  // clear the sleepy flag
          EEwriteSleepyBytes();
-         Serial.print("#Clearing Sleepy Flag$");
+         Serial.println("#Clearing Sleepy Flag"); Serial.print("$");
          sendLCDprompt();  // home screen LCD display
 //         display.print("  Not Sleeping"); display.refresh();  // verbose
 //         delay(800);                                          // verbose
@@ -70,10 +70,10 @@ void readButtons(){
                  printStoredGifInfo();
                  return;  // get outa here!
                }
-               printStoredGifInfo();
+//               printStoredGifInfo();
              }else if(activeGif <= numberOfGifs){
                sendGifToLCD = true;
-               printStoredGifInfo();
+//               printStoredGifInfo();
                return;
              }
            }else{

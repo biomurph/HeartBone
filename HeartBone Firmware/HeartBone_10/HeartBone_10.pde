@@ -180,7 +180,7 @@ void loop(){
 
 
   if(frameBufferLoaded){  // write a frame in four 256 byte pages + one 128 byte page
-    Serial.println("#writing latest frame to the eeprom$");
+    Serial.println("#writing latest frame to EEPROM"); Serial.print("$");
     totalFramesUsed = getTotalFramesUsed();
     totalFramesUsed+= loadedFrameCounter;
     for(int i=0; i<256*4; i+=256){

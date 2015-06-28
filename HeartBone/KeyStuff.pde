@@ -75,8 +75,8 @@ void keyPressed() {
       bone.write('%');
       break;
     case '0': case '1': case'2': case'3': case'4': case'5': case'6': case'7': case'8': case'9':
-//      clearTerm();
-//      bone.write('#');
+      clearTerm();
+      bone.write('#');
       break;
     default:
       break;
@@ -129,6 +129,8 @@ boolean safeToken(char t){
   switch(t){
     case 'a': safe = false; break;
     case 'A': safe = false; break;
+    case 'b': safe = false; break;
+    case 'B': safe = false; break;
     case 'x': safe = false; break;
     case '#': safe = false; break;
     default:

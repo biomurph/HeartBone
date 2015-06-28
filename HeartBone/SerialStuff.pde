@@ -5,7 +5,7 @@ void eventSerial(){
     char inChar = char(bone.read());
     print(inChar);  // verbose
     if(receivingFromBone){
-      if(inChar == '$'){receivingFromBone = false; boneString = " ";return;}
+      if(inChar == '$'){receivingFromBone = false; return;}  // boneString = " ";
       if(inChar == '\n'){
         writeBoneData();
         boneString = " ";
