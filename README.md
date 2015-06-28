@@ -49,6 +49,7 @@ This is where things get tedious, but it's a simple process. When you play the s
 
 ![image](images/SerialPortError.png)
 
+
 If this happens, take a look at the white on black text at the bottom of the window. There is a list of all available ports on your computer. The Heart Bone is among them. Look for the port calle 
 
 	/dev/tty.usbmodemXXXX
