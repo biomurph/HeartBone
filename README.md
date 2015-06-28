@@ -8,7 +8,7 @@ The enclosed softawre connects with your Hear Bone via USB cable, and allows you
 
 ### FTDI Driver 
 
-You need a Future Technology Devices (FTDI) driver on your computer if you don't already have one. This tool allows your computer to talk to the Heart Bone through a Virtual COM Port (VCP). Use [this](http://www.ftdichip.com/Drivers/VCP.htm) link the find the correct driver for your operating system, and install it now. It will take n minutes.
+You need a Future Technology Devices International (FTDI) driver on your computer if you don't already have one. This tool allows your computer to talk to the Heart Bone through a Virtual COM Port (VCP). Use [this](http://www.ftdichip.com/Drivers/VCP.htm) link the find the correct driver for your operating system, and install it now. It will take n minutes.
 
 
 ### Processing
@@ -82,11 +82,16 @@ The Heart Bone should be awake befrore connecting to any control software.
 
 ## Keyboard Commands
 
-When you start the Heart Bone software and connect you will see a window that looks liek this
+When you start the Heart Bone software and connect you will see a window that looks like this
 
 ![SketchScreenShot](images/SketchScreenShot.png)
 
+<<<<<<< HEAD
 The program window contains information about gifs stored on the Heart Bone, and givs stored on the computer. The image on the upper left is of a gif stored on the computer. You can scroll all the gifs stored on the computer by using the UP and DOWN keys. Use the following keys to control the Heart Bone. 
+=======
+Almost all of the keyboard commands are shown, but hey, we're still in beta..
+The program window contains information about gifs stored on the Heart Bone, and gifs stored on the computer. The image on the upper left is of a gif stored on the computer. You can scroll all the gifs stored on the computer by using the UP and DOWN keys. Use the following keys to control the Heart Bone. 
+>>>>>>> origin/master
 
 **Note:** *If you navigate away from the Sketch window while a gif upload is taking place, the frame being loaded will contain a glitch, and not a pretty or cool glitch. This is on the list of future fixes.*
 
@@ -101,7 +106,7 @@ The program window contains information about gifs stored on the Heart Bone, and
 	*	This is useful for debugging 
 
 ### a or A
-*	These keys convert the gif image to BLACK and WHITE, and loads it to your Heart Bone. The program reads the color of the FIRST pixel (upper-left-most pixel)of the FIRST gif and uses that as the background color for ALL of the frames in the gif. Pressing 'a' reads the background as BLACK. Pressing 'A' reads the background as WHITE. This works well with most gifs that have a consistent background color, like KOI.gif. Or ones that have an animation that changes the pixel color at the upper left corner of the screen, like Spiraltorustorso.gif 
+*	These keys convert the gif image to BLACK and WHITE, and loads it to your Heart Bone. The program reads the color of the FIRST pixel (upper-left-most pixel)of the FIRST gif and uses that as the background color for ALL of the frames in the gif. Pressing 'a' reads the background as BLACK. Pressing 'A' reads the background as WHITE. This works well with most gifs that have a consistent background color, like KOI.gif. Or gifs that have an animation that changes the pixel color at the upper left corner of the screen, like Spiraltorustorso.gif 
 
 ### b or B
 *	These keys convert the gif image to BLACK and WHITE, and loads it to your Heart Bone. The program reads the color of the first pixel of EVERY gif frame (upper-left-most pixel) and uses that as the background color FOR THAT FRAME.This is useful if you have a gif with changing background like explode.gif or fiercingHeart.gif
