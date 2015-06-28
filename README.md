@@ -86,8 +86,9 @@ When you start the Heart Bone software and connect you will see a window that lo
 
 ![SketchScreenShot](images/SketchScreenShot.png)
 
-Almost all of the keyboard commands are shown, but hey, we're still in beta..
 The program window contains information about gifs stored on the Heart Bone, and givs stored on the computer. The image on the upper left is of a gif stored on the computer. You can scroll all the gifs stored on the computer by using the UP and DOWN keys. Use the following keys to control the Heart Bone. 
+
+**Note:** *If you navigate away from the Sketch window while a gif upload is taking place, the frame being loaded will contain a glitch, and not a pretty or cool glitch. This is on the list of future fixes.*
 
 ### p
 *	Press 'p' to animate the gif in the upper left
