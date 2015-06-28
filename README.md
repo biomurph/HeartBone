@@ -53,7 +53,13 @@ If this happens, take a look at the white on black text at the bottom of the win
 
 	/dev/tty.usbmodemXXXX
 	
-That is the port you want to connect to. Count the ports available starting from 0, and put that 
+That is the port you want to connect to. Count the ports available starting from 0, and put that number in the highlighted code as shown below
+
+![image](images/portNumber.png)
+
+Even if the program starts up, if you may find your Heart Bone unresponsive, this is a good place to start debugging.
+
+
 
 
 
