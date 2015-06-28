@@ -16,7 +16,7 @@ void keyPressed() {
       if(!enoughMemory()){return;}
       playingGif = false;
       frameNum = 0;
-      option = true;
+      option = true;  // effects bufferImage()
       bufferImage();  // load the frame into the frame buffer
       byteCounter = 0;
       getBgrndForEachFrame = false;
@@ -137,24 +137,6 @@ boolean safeToken(char t){
   return safe;
 }
 
-//void printPixels(){
-//  int pix = 0;   // pixel counter
-//      for (int i=0; i<LCDheight; i++){  // sort through the image area only
-//        for (int j=0; j<LCDwidth; j++){  // sort through the image area only
-////          if(pix == 0) {print(pixels[pix]);}  //  print out the value of the background, if you like
-//          if (pixels[pix] == pixels[0]){  // follow the background (add param to flip)
-////          if (pixels[pix] == -16777216){  // -16777216 appears to be black
-//            print('0');
-//          }else{
-//            print('1');
-//          }
-//          pix++;
-//        }
-//        pix += width-LCDwidth;  // go directly to next line
-//        println();
-//      }
-//      println("\n");
-//}
 
 void printPixels(){
   println("Starting Pixels Dump");
@@ -183,8 +165,8 @@ boolean enoughMemory(){
   if(availableFrames >= gifFrames.length){
     is = true;
   }else{
-    print("not enough memory");
-    text("not enough memory for " + gifName,outdent,(feedbackTextLine + lineHeight));
+    print("error: not enough memory");
+    text("error: not enough memory for " + gifName,outdent,(feedbackTextLine + lineHeight));
   }
   return is;
 }

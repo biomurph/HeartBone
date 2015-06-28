@@ -58,9 +58,15 @@ That is the port you want to connect to. Count the ports available starting from
 
 ![image](images/PortNumber.png)
 
-Even if the program starts up, if you may find your Heart Bone unresponsive. If that happens, this is a good place to start debugging. Some ports can pretend to be a Heart Bone...
+Even if the program starts up, if you may find your Heart Bone unresponsive. If that happens, this is a good place to start debugging. Some ports can pretend to be a Heart Bone.
 
-If you have your Heart Bone connected correctly and the software is running, you can fine a command cheat sheet [here](https://github.com/biomurph/HeartBone/blob/master/CheatSheet.md).
+##Troubleshooting
+
+When in doubt, reboot. Start everything over from the top. Unplug, and the plug again. Re-read these documents, and then email me if it's really broken.
+
+biomurph at gmial dot com
+
+If you have your Heart Bone connected correctly and the software is running, you can find a command cheat sheet [here](https://github.com/biomurph/HeartBone/blob/master/CheatSheet.md).
 
 
 

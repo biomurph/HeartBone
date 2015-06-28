@@ -1,8 +1,6 @@
 /*
 
-  HEARTBONE WATCH 
-  
-
+  HEARTBONE WATCH CONTROL SOFTWARE BETA
 
  */
 
@@ -57,7 +55,7 @@ boolean option = true;
 
 int bgrnd = 50;
 void setup() {
-  size(800,500);
+  size(900,500);
   frameRate(framesPerSecond);
 
   println("gifAnimation " + Gif.version()); // verbose version
@@ -159,7 +157,7 @@ void bufferImage(){  // arrange bitmap for transfer
    byte b;
    int byteCounter = 0;
    if(frameNum == 0){
-     pixelZero = pixels[pix];  // this grabs first pixel of first frame ONLY for background
+     pixelZero = pixels[0];  // this grabs first pixel of first frame ONLY for background
    }
    if(getBgrndForEachFrame){
      pixelZero = pixels[0];  // this grabs first pixel of EACH frame for background
@@ -168,11 +166,12 @@ void bufferImage(){  // arrange bitmap for transfer
      for (int i=0; i<LCDheight; i++){  // sort through the image area only
        for (int j=0; j<LCDwidth; j++){  // sort through the image area only
          if (pixels[pix] == pixelZero){  // follow the background
-//           b = 0x00;
-           if(option){b = 0x00;}else{b = 0x01;}
+           b = 0x00;
+           if(option){b = 0x01;}
 //           print("0");   // verbose
          }else{    // test if the pixel is white or black
-           if(option){b = 0x01;}else{b = 0x00;}
+           b = 0x01;
+           if(option){b = 0x00;}
 //           print("1"); // verbose
          }
          pix++;
@@ -205,11 +204,13 @@ void updateText(){
   gifName = gifName.substring(0,gifName.length()-4);
   text(gifName,10,120);
   text("press 'p' to toggle gif animation on/off",lineStart,(textLine+=lineHeight));
-  text("press 'P' to print frame in 1s & 0s to terminal",lineStart,(textLine+=lineHeight));
   text("press 'l' to advance gif one frame with rollover",lineStart,(textLine+=lineHeight));
-  text("Press 'a' to initiate gif load pixel true",lineStart,(textLine+=lineHeight));
-  text("Press 'A' to initiate gif load pixel inverted",lineStart,(textLine+=lineHeight));
+  text("Press 'a' to start gif xfer pixel True",lineStart,(textLine+=lineHeight));
+  text("Press 'A' to start gif xfer pixel Inverted",lineStart,(textLine+=lineHeight));
+  text("Press 'b' to start gif xfer with background set for each frame, pixel True",lineStart,(textLine+=lineHeight));
+  text("Press 'B' to start gif xfer with background set for each frame, pixel Inverted",lineStart,(textLine+=lineHeight));
   text("Press 'E' to erase the EEPROM. No turning back.",lineStart,(textLine+=lineHeight));
+  text("Press '1' - '9' to play stored gifs",lineStart,(textLine+=lineHeight));
   textLine+=lineHeight;  // add a space
   text("Gif " + (gifNumber+1) + " of " + currentGif.size() + " has "+gifFrames.length + " frames  Frame Rate: " + delays[0],outdent,textLine+=lineHeight);
   text("Use UP DOWN to select gif",outdent,(textLine+=lineHeight));
