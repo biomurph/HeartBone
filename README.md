@@ -45,7 +45,7 @@ Then, launch the program by pressing the play button in Processing
 
 ###Connect to the right Serial Port!
 
-This is where things get tedious, but it's a simple process. When you play the sketch in processing, one of the first things it does is to try to connect to the Heart Bone, if it can't connect, you will get an error that looks like this
+This is where things get tedious, but it's a simple process. When you play the sketch in Processing, one of the first things it does is to try to connect to the Heart Bone. If it can't connect, you will get an error that looks like this
 
 ![image](images/SerialPortError.png)
 
@@ -58,7 +58,9 @@ That is the port you want to connect to. Count the ports available starting from
 
 ![image](images/PortNumber.png)
 
-Even if the program starts up, if you may find your Heart Bone unresponsive, this is a good place to start debugging.
+Even if the program starts up, if you may find your Heart Bone unresponsive. If that happens, this is a good place to start debugging. Some ports can pretend to be a Heart Bone...
+
+If you have your Heart Bone connected correctly and the software is running, you can fine a command cheat sheet [here](http://).
 
 
 
