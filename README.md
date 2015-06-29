@@ -17,7 +17,7 @@ Processing is a popular creative coding platform. The software that controls you
 
 ### Heart Bone Software
 
-The enclosed folder called HeartBone contains a Processing sketch and the current release of gifs engineered to run on the Heart Bone platform. Move the folder and it's entire contents to the location
+First, download the contents of this repository by clicking the "Download Zip" button on the right, or click [here](https://github.com/biomurph/HeartBone/archive/master.zip). The enclosed folder called HeartBone contains a Processing sketch and the current release of gifs engineered to run on the Heart Bone platform. Move the folder and it's entire contents to the location
 
 		User/Documents/Processing
 
