@@ -37,9 +37,7 @@ It will open a window that looks like this
 
 ![image](images/HB-Open.png)
 
-Plug your Heart Bone into the USB cable. If you see a red LED light up, you know the battery is being charged. 
-**Make Sure The Heart Bone Is Awake** by pressing the wake button
-Then, launch the program by pressing the play button in Processing
+Plug your Heart Bone into the USB cable. If you see a red LED light up, you know the battery is being charged. **Make Sure The Heart Bone Is Awake** by pressing the wake button. Then, launch the program by pressing the play button in Processing
 
 ![playbutton](images/PlayButton.png)
 
@@ -50,11 +48,11 @@ This is where things get tedious, but it's a simple process. When you play the s
 ![image](images/SerialPortError.png)
 
 
-If this happens, take a look at the white on black text at the bottom of the window. There is a list of all available ports on your computer. The Heart Bone is among them. Look for the port calle 
+If this happens, take a look at the white on black text at the bottom of the Processing window. There is a list of all available ports on your computer and they all start with **/dev/...** The Heart Bone is among them. Look for the port called
 
 	/dev/tty.usbmodemXXXX
 	
-That is the port you want to connect to. Count the ports available starting from 0, and put that number in the highlighted code as shown below
+The **tty.usbmodem** is the port you want to connect to. Count the ports available starting from 0, and put that number in the highlighted code as shown below
 
 ![image](images/PortNumber.png)
 
