@@ -26,7 +26,7 @@ char eventSerial(){
         case 'u': // print all the frames from all the animations ?
           printEEframes_Hex();
           break;
-        case 'E': // erase eeprom on chip for good ! erasing still blanks the frame
+        case 'E': // erase eeprom on chip for good ! 
           Serial.println("# erasing entire chip"); Serial.print("$");
           EEchipErase();
           sendGifToLCD = false;
@@ -44,33 +44,26 @@ char eventSerial(){
           break;
         case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
           requestedGifNumber = c - '1';  // dont commit until you know it is legit
-          if(requestedGifNumber < numberOfGifs && activeGif >= 0){
+          if(requestedGifNumber < numberOfGifs){  
             sendGifToLCD = true;
             activeGif = requestedGifNumber;
             activeGifFrameCounter = 0;
-            printStoredGifInfo();
           }else{
             sendGifToLCD = false;
             sendLCDprompt();
             Serial.print("#No Gif at "); Serial.println(c);Serial.print("$");
-//            display.print("  No Gif at "); display.println(c); display.refresh();  // verbose
+            display.print("  No Gif at "); display.println(c); display.refresh();  // verbose
             delay(800);
-//            sendLCDprompt();  // reset LCD display
-            printStoredGifInfo();
+            sendLCDprompt();  // reset LCD display
           }
           break;
-        case '%':
-          getStoredGifInfo();  
-          printStoredGifInfo();
-          break;
-        case '^':
+        case '^':  // this is not used in program yet...
           Serial.print(totalFramesUsed,BYTE);  
           break;
         case '0':
           display.clearDisplay();
           sendGifToLCD = false; // stop sending the gif you're sending
           sendLCDprompt();
-          printStoredGifInfo();
           break;
 //        case 's':  // verbose testing
 //          Serial.print("sleepyBytes ");
@@ -88,19 +81,4 @@ char eventSerial(){
   } 
 }
 
-//  some chars cannot be used verbosely. too powerful  //  not sure this is necessary...
-//boolean safeToken(char t){
-//  boolean safe = true;
-//  switch(t){
-//    case 'a': safe = false;
-//    break;
-//    case 'x': safe = false;
-//    break;
-//    case '#': safe = false;
-//    break;
-//    
-//    default:
-//    break;
-//  }
-//  return safe;
-//}
+

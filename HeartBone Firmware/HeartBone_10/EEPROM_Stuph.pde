@@ -5,7 +5,7 @@
  1152 bytes in Frame
  4.5 pages per Frame
  100 Frames @ 5 pages per frame
- 128 bytes allocated usable for metadata
+ 128 bytes available in each frame usable for metadata
  
  
  */

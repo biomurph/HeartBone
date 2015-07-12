@@ -44,6 +44,9 @@
 
 //  Create the display (Slave Select Pin, Display Enable Pin)
 HeartBone_Watch display(LCD_SS, DISP);
+#define SLEEP  0
+#define WAKE   1
+#define PLAY   2
 
 // Each frame takes up 1152 bits, 144 bytes, 4.5 pages of EEPROM
 // Reserve 5 pages per frame
@@ -73,7 +76,6 @@ boolean hasGifs = false;       // boolean set when gifs are in eeprom
 int gifStartAddress[9];  // save the start address of up to 9 gifs 
 boolean coldReadFrame = false;  // verbose?
 
-//boolean sendGif_1_ToLCD = false;  // does what it says
 boolean sendGifToLCD = false; // sends the activeGif to LCD
 int activeGif = 0;
 int activeGifFrameCounter = 0;
@@ -146,7 +148,6 @@ void loop(){
         feelSleepyState();
       }  
 
-//  if(!sleepy){  // this is dangerous?
         
   if(sendGifToLCD){    // plays the acitveGif at a default frame rate
     
@@ -180,7 +181,7 @@ void loop(){
 
 
   if(frameBufferLoaded){  // write a frame in four 256 byte pages + one 128 byte page
-    Serial.println("#writing latest frame to EEPROM"); Serial.print("$");
+    Serial.println("#writing latest frame to the eeprom$");
     totalFramesUsed = getTotalFramesUsed();
     totalFramesUsed+= loadedFrameCounter;
     for(int i=0; i<256*4; i+=256){
@@ -210,8 +211,8 @@ void loop(){
   }
 
   if(!loadingFrameBuffer){eventSerial();}
-  readButtons();   // button0 = sleepy; button1 = !sleepy; button2 = scroll stored gifs
-//  }// end of if(!sleepy)
+  readButtons();   // button0 = sleepy, button1 = wake, button2 = play
+
 }  // end of loop
 
 
@@ -310,8 +311,9 @@ void printStoredGifInfo(){
   }else{
     Serial.println("No gif playing");
   }
-  Serial.print("$");  // send '$' to tell program string is over
-  Serial.print("="); Serial.print(framesAvailable,BYTE);
+  Serial.print("$");  // send '$' to end string
+//  byte dummy = (framesAvailable & 0xFF);
+  Serial.print("\n="); Serial.print(framesAvailable,BYTE);
   
 }
 
@@ -320,7 +322,7 @@ void initButtons(){
     pinMode(button[i],INPUT);
     buttonPressed[i] = false;
   }
-  readButtons(); // that fixed it!
+  readButtons(); 
 }
 
 void feelSleepyState(){

@@ -5,7 +5,7 @@ void eventSerial(){
     char inChar = char(bone.read());
     print(inChar);  // verbose
     if(receivingFromBone){
-      if(inChar == '$'){receivingFromBone = false; return;}  // boneString = " ";
+      if(inChar == '$'){receivingFromBone = false; boneString = " ";return;}
       if(inChar == '\n'){
         writeBoneData();
         boneString = " ";
@@ -28,7 +28,6 @@ void eventSerial(){
           println("sent all frames");
           bone.write('x');  // tell watch that we're done
           nextFrame = false;
-          getBgrndForEachFrame = false;
           clearTerm();
           frameRate(60);
           return;
@@ -40,7 +39,7 @@ void eventSerial(){
       case '=':
         while(bone.available() == 0){}
         availableFrames = int(bone.read());
-        print("numFrames " + availableFrames);
+        print(availableFrames + " frames available");
         break;
       default:
         break;

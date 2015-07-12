@@ -1,6 +1,10 @@
 /*
 
-  HEARTBONE WATCH CONTROL SOFTWARE BETA
+  HEARTBONE WATCH 
+  
+  bugs:
+    after E erase, watch tries to play gif at 1. recovers after reset
+    if gif is playing in ap, needs to stop, and start at 0 if user uploads
 
  */
 
@@ -19,8 +23,6 @@ int outdent = 50;
 int feedbackTextLine;
 
 int frameNum = 0;  // used to step through frames
-int pixelZero;  // 
-boolean getBgrndForEachFrame = false;
 byte h = 0x00;  //
 
 //PrintWriter imageFile;  // ?
@@ -55,7 +57,7 @@ boolean option = true;
 
 int bgrnd = 50;
 void setup() {
-  size(900,500);
+  size(800,500);
   frameRate(framesPerSecond);
 
   println("gifAnimation " + Gif.version()); // verbose version
@@ -69,12 +71,12 @@ void setup() {
   currentGif.append("snakeeyes.gif");
   currentGif.append("tubegoblin.gif");
   currentGif.append("braid-01.gif");
-  currentGif.append("knot_01.gif");
   currentGif.append("spiral2.gif");
   currentGif.append("explode.gif");
   currentGif.append("fierceHeart_01.gif");
   currentGif.append("Koi.gif");
   currentGif.append("fiercingHeart.gif");
+  currentGif.append("hyperCube.gif");
   //currentGif.append("");
 
   println(Serial.list());  // list the serial ports available
@@ -83,11 +85,11 @@ void setup() {
 
   getCurrentGif(gifNumber);
 
-//  sendStartText();  // show prompts on console
-  background(bgrnd);  //
+  sendStartText();  // show prompts on console
+  background(bgrnd);  // neutral grey background
   updateText();    // print commands and currentGif info to screen
-  bone.write('0');
-  getWatchData();
+  bone.write('0');  // tell watch to stop and send stored info
+  bone.write('#');  // get info from watch
 }
 
 void draw() {
@@ -118,7 +120,6 @@ void draw() {
   if(sendingFrame){
     bone.write(picData[byteCounter]);
     byteCounter++;
-    if(byteCounter == 1){scroll();}
     if(byteCounter%128 == 0){
       println(byteCounter + " bytes sent");
       scroll();
@@ -127,22 +128,6 @@ void draw() {
       sendingFrame = false;
     }
   }
-
-//  if(sendingFrame){
-//    for (int i=0; i<picData.length; i++){
-//      bone.write(picData[byteCounter]);
-////      byteCounter++;
-//      delay(5);
-//      if(i == 1){scroll();}
-//      if(i%128 == 0){
-//        println(i + " bytes sent");
-//        scroll();
-//      }
-////    if(byteCounter == picData.length){
-////      sendingFrame = false;
-//    }
-//    sendingFrame = false;
-//  }
 
   eventSerial();
 
@@ -167,27 +152,20 @@ void mousePressed() {
 
 
 
-void bufferImage(){  // arrange bitmap for transfer
+void bufferImage(){
    loadPixels();  // loads 96x96 gif frame into pixel array
-   int pix = 0;
-   byte b;
-   int byteCounter = 0;
-   if(frameNum == 0){
-     pixelZero = pixels[0];  // this grabs first pixel of first frame ONLY for background
-   }
-   if(getBgrndForEachFrame){
-     pixelZero = pixels[0];  // this grabs first pixel of EACH frame for background
-   }
-//    println(pixelZero);  // verbose
+     int pix = 0;
+     byte b;
+     int byteCounter = 0;
      for (int i=0; i<LCDheight; i++){  // sort through the image area only
        for (int j=0; j<LCDwidth; j++){  // sort through the image area only
-         if (pixels[pix] == pixelZero){  // follow the background
-           b = 0x00;
-           if(option){b = 0x01;}
+         if(pix == 0) {println(pixels[pix]);}  //  print out the  of the background, if you like
+         if (pixels[pix] == pixels[0]){  // follow the background
+//           b = 0x00;
+           if(option){b = 0x00;}else{b = 0x01;}
 //           print("0");   // verbose
          }else{    // test if the pixel is white or black
-           b = 0x01;
-           if(option){b = 0x00;}
+           if(option){b = 0x01;}else{b = 0x00;}
 //           print("1"); // verbose
          }
          pix++;
@@ -202,16 +180,16 @@ void bufferImage(){  // arrange bitmap for transfer
 }
 
 
-//void sendStartText(){
-//  println("GIF has "+gifFrames.length + " frames");
-//  println("press 'p' to toggle gif animation on/off");
-//  println("press 'l' to advance one frame with rollover");
-//  println("press 'P' to print the frame displayed to console in 1s and 0s");
-//  println("Press 'a' to initiate gif load pixel True");
-//  println("Press 'E' to erase the EEPROM");
-//  println("Press 'A' to initiate gif load pixel inverted");
-//  println("Contents of EEPROM:\n");
-//}
+void sendStartText(){
+  println("GIF has "+gifFrames.length + " frames");
+  println("press 'p' to toggle gif animation on/off");
+  println("press 'l' to advance one frame with rollover");
+  println("press 'P' to print the frame displayed to console in 1s and 0s");
+  println("Press 'a' to initiate gif load pixel True");
+  println("Press 'E' to erase the EEPROM");
+  println("Press 'A' to initiate gif load pixel inverted");
+  println("Contents of EEPROM:\n");
+}
 
 void updateText(){
   fill(txtFill);
@@ -220,13 +198,11 @@ void updateText(){
   gifName = gifName.substring(0,gifName.length()-4);
   text(gifName,10,120);
   text("press 'p' to toggle gif animation on/off",lineStart,(textLine+=lineHeight));
+  text("press 'P' to print frame in 1s & 0s to terminal",lineStart,(textLine+=lineHeight));
   text("press 'l' to advance gif one frame with rollover",lineStart,(textLine+=lineHeight));
-  text("Press 'a' to start gif xfer with BLACK background",lineStart,(textLine+=lineHeight));
-  text("Press 'A' to start gif xfer with WHITE background",lineStart,(textLine+=lineHeight));
-  text("Press 'b' to start gif xfer with background set for each frame, BLACK",lineStart,(textLine+=lineHeight));
-  text("Press 'B' to start gif xfer with background set for each frame, WHITE",lineStart,(textLine+=lineHeight));
+  text("Press 'a' to initiate gif load pixel true",lineStart,(textLine+=lineHeight));
+  text("Press 'A' to initiate gif load pixel inverted",lineStart,(textLine+=lineHeight));
   text("Press 'E' to erase the EEPROM. No turning back.",lineStart,(textLine+=lineHeight));
-  text("Press '1' - '9' to play stored gifs",lineStart,(textLine+=lineHeight));
   textLine+=lineHeight;  // add a space
   text("Gif " + (gifNumber+1) + " of " + currentGif.size() + " has "+gifFrames.length + " frames  Frame Rate: " + delays[0],outdent,textLine+=lineHeight);
   text("Use UP DOWN to select gif",outdent,(textLine+=lineHeight));
