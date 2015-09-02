@@ -6,8 +6,8 @@
  4.5 pages per Frame
  100 Frames @ 5 pages per frame
  128 bytes available in each frame usable for metadata
- 
- 
+
+
  */
 
 
@@ -133,11 +133,8 @@ void EEwritePage(int address)  // write the entire page buffer starting at addre
   display.spi.transfer(WRDI);			// disable write
   digitalWrite(EE_SS,HIGH);
 
-  //    benchTimer = micros();
   while((EEreadStatus()) && 0x02 > 0){
   }
-  //    bench = micros() - benchTimer;
-  //    Serial.print("page write took "); Serial.print(bench); Serial.println("uS");
 }
 
 
@@ -159,11 +156,9 @@ void EEwriteByte(int address, uint8_t outByte)  // write a single byte
   display.spi.transfer(WRDI);			// disable write
   digitalWrite(EE_SS,HIGH);
 
-  //    benchTimer = micros();
   while((EEreadStatus()) && 0x02 > 0){
   }
-  //    bench = micros() - benchTimer;
-  //    Serial.print("byte write took "); Serial.print(bench); Serial.println("uS");
+
 }
 
 
@@ -187,11 +182,10 @@ void EEwriteBytes(int address, int numBytes)  // write numBytes starting at addr
   display.spi.transfer(WRDI);			// disable write
   digitalWrite(EE_SS,HIGH);
 
-  //    benchTimer = micros();
+
   while((EEreadStatus() && 0x02) > 0){
   }
-  //    bench = micros() - benchTimer;
-  //    Serial.print("bytes write took "); Serial.print(bench); Serial.println("uS");
+
 }
 
 void EEwriteSleepyBytes()  // write numBytes starting at address
@@ -214,11 +208,10 @@ void EEwriteSleepyBytes()  // write numBytes starting at address
   display.spi.transfer(WRDI);			// disable write
   digitalWrite(EE_SS,HIGH);
 
-  //    benchTimer = micros();
+
   while((EEreadStatus() && 0x02) > 0){
   }
-  //    bench = micros() - benchTimer;
-  //    Serial.print("bytes write took "); Serial.print(bench); Serial.println("uS");
+
 }
 
 void EEwriteFrameBytes(int address, int numBytes)  // write numBytes starting at address
@@ -244,11 +237,10 @@ void EEwriteFrameBytes(int address, int numBytes)  // write numBytes starting at
   display.spi.transfer(WRDI);	// disable write
   digitalWrite(EE_SS,HIGH);
 
-  //    benchTimer = micros();
+
   while((EEreadStatus()) && 0x02 > 0){
   }
-  //    bench = micros() - benchTimer;
-  //    Serial.print("frame bytes write took "); Serial.print(bench); Serial.println("uS");
+
 }
 
 
@@ -290,35 +282,35 @@ void EEchipErase()  // erase the entire chip
 }
 
 
-void printPage()
-{
-  for(int i=0;i<pageSize; i++){
-    Serial.print(page[i],HEX);
-    if((i+1)%32 == 0){
-      Serial.print("\n");
-    }
-    else{
-      Serial.print(",");
-    }
-  }
-  Serial.println(); 
-}
+//void printPage()
+//{
+//  for(int i=0;i<pageSize; i++){
+//    Serial.print(page[i],HEX);
+//    if((i+1)%32 == 0){
+//      Serial.print("\n");
+//    }
+//    else{
+//      Serial.print(",");
+//    }
+//  }
+//  Serial.println();
+//}
 
-void writePageBuffer()
-{
-  Serial.println("Writing index to page buffer");
-  for(int i=0;i<pageSize; i++){
-    page[i] = uint8_t(i);
-  }
-}
+//void writePageBuffer()
+//{
+//  Serial.println("Writing index to page buffer");
+//  for(int i=0;i<pageSize; i++){
+//    page[i] = uint8_t(i);
+//  }
+//}
 
-void writePageBuffer(uint8_t b)  // pass the variable b to the entire page buffer
-{
-  Serial.print("Writing "); 
-  Serial.print(b,HEX); 
-  Serial.println(" to page buffer");
-  for(int i=0;i<pageSize; i++){
-    page[i] = b;
-  }
-}
+//void writePageBuffer(uint8_t b)  // pass the variable b to the entire page buffer
+//{
+//  Serial.print("Writing ");
+//  Serial.print(b,HEX);
+//  Serial.println(" to page buffer");
+//  for(int i=0;i<pageSize; i++){
+//    page[i] = b;
+//  }
+//}
 

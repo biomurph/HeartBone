@@ -1,102 +1,86 @@
 /*
 
-  HEARTBONE WATCH 
+  HEARTBONE WATCH INTERFACE PROGRAM
   
-  bugs:
-    after E erase, watch tries to play gif at 1. recovers after reset
-    if gif is playing in ap, needs to stop, and start at 0 if user uploads
+  NOTES:
+
 
  */
 
 import gifAnimation.*;  // get the gif tools
-import processing.serial.*;  // get the hardware com
+import processing.serial.*;  // get the serial com 
 
-PImage[] gifFrames;  // using PImage to hold gif frame series
-Serial bone;   // name the serial port
+int FRAME_LENGTH = 1152;  // number of bytes in each frame
 
+PImage[] gifFrames;  // using PImage to hold current gif frame
+Serial bone;         // name of the serial port
+
+// FONT AND WATCH DATA FORMATTING
 PFont font;
 int txtFill = 255;
 int textLine = 20;
 int lineHeight = 20;
 int lineStart = 210;
-int outdent = 50;
+int indent = 50;
 int feedbackTextLine;
+String boneString = " ";
+boolean receivingFromBone = false;
+String scrollString = " ";
 
+// FRAME STUFF
 int frameNum = 0;  // used to step through frames
-byte h = 0x00;  //
-
-//PrintWriter imageFile;  // ?
 int frameSize = 96*12;  // 96 vertical x 8*12 horizontal
 byte[] picData = new byte [frameSize];  // array to hold the pixels[] data
 int[] delays = new int [100];   // reserve max ints to hold individual frame delays for current frame
 int startOfFrameMillis;  // holds the start time of current frame for playback
+int firstPixel;
+char option;
 
-String boneString = " ";
-boolean receivingFromBone = false;
-boolean savingImage = false;
-boolean sendingPage = false;
+//  GENERALLY USEFUL TO HAVE AROUND
 int byteCounter = 0;
+long timeOut;
 
 boolean playingGif = false;  //  press 'p' to play the gif one time
-boolean writingHalfPage = false;  // timing flag during EEPROM write session
-boolean sendingFrame = false;  //
-int halfPageCounter;  // timing flad during EEPROM write session
-boolean nextFrame = false;  //
-int availableFrames = 0;  // sourced from the watch
+//boolean writingHalfPage = false;  // timing flag during EEPROM write session
+boolean sendingFrame = false;  // triggers sending of frame to watch
+boolean nextFrame = false;  // true when watch asks for next frame and it's available to send
+int availableFrames = 0;  // sourced from the watch EEPROM
 
 int LCDwidth = 96;
 int LCDheight = 96;
 
-int framesPerSecond = 60;  // changes to 200 during upload for speed's sake
 
 StringList currentGif;
 int  gifNumber = 0;  // the gif on display
 String gifName;
 
-boolean option = true;
+
 
 int bgrnd = 50;
 void setup() {
   size(800,500);
-  frameRate(framesPerSecond);
-
-  println("gifAnimation " + Gif.version()); // verbose version
+  frameRate(60);
   font = loadFont("Monaco-16.vlw");
   textFont(font, 16);
-
-  currentGif = new StringList();
-  currentGif.append("Tessellate.gif");
-  currentGif.append("PlutoCharon.gif");
-  currentGif.append("spiraltorustorso.gif");
-  currentGif.append("snakeeyes.gif");
-  currentGif.append("tubegoblin.gif");
-  currentGif.append("braid-01.gif");
-  currentGif.append("spiral2.gif");
-  currentGif.append("explode.gif");
-  currentGif.append("fierceHeart_01.gif");
-  currentGif.append("Koi.gif");
-  currentGif.append("fiercingHeart.gif");
-  currentGif.append("hyperCube.gif");
-  //currentGif.append("");
-
+  
+  loadGifs();  // get list of stored gifs from data file
+  getCurrentGif(gifNumber);  // load th first gif to diplay on screen
+  sendStartText();  // show prompts on console
+  
   println(Serial.list());  // list the serial ports available
   bone = new Serial(this, Serial.list()[9], 115200);  // open port at baudrate
 
-
-  getCurrentGif(gifNumber);
-
-  sendStartText();  // show prompts on console
+  // START THE SHOW
   background(bgrnd);  // neutral grey background
   updateText();    // print commands and currentGif info to screen
-  bone.write('0');  // tell watch to stop and send stored info
-  bone.write('#');  // get info from watch
+  getWatchData(); // formats to sketch window
+
 }
+
 
 void draw() {
 
-
-
-  image(gifFrames[frameNum], 0, 0);  // reads from the data file in Sketch folder
+  image(gifFrames[frameNum], 0, 0);  // display 96x96 pix image from the data file in Sketch folder
 
   if(playingGif){
     if(millis() - startOfFrameMillis > delays[frameNum]){
@@ -105,31 +89,49 @@ void draw() {
 
       if(frameNum == gifFrames.length){
         frameNum = 0;
-//        playingGif = false;
+//        playingGif = false;  // just once please
       }
     }
   }
 
-  if(nextFrame){    //
+  if(nextFrame){    //  
+    println("buffering");
     bufferImage();  // load the frame into the frame buffer
     byteCounter = 0;
     bone.write('a');  // send the 'a' to then get a '!' and keep sending frames
     nextFrame = false;  // reset nextFrame flag
   }
 
-  if(sendingFrame){
-    bone.write(picData[byteCounter]);
-    byteCounter++;
-    if(byteCounter%128 == 0){
-      println(byteCounter + " bytes sent");
-      scroll();
+  if(sendingFrame == true){
+    if(byteCounter == 0){
+      bone.write(picData[byteCounter]);  // send the first byte
+      byteCounter++;
+      timeOut = millis();
     }
-    if(byteCounter == picData.length){
-      sendingFrame = false;
-    }
+    
+    while(sendingFrame == true){  //
+      if(bone.available() > 0){
+        char test = char(bone.read());
+//        print(test);  // verbose
+        if(test == '*'){  // get a * from bone before sending next byte
+          bone.write(picData[byteCounter]);  // send the next byte
+          byteCounter++;
+          if(byteCounter%256 == 0){
+            println(byteCounter + " bytes sent");
+          }
+          if(byteCounter == FRAME_LENGTH){  // 
+            sendingFrame = false;
+            byteCounter = 0;
+          }
+        }
+      }//end of if
+      delay(1);  // how small can this be?
+      if(millis() - timeOut > 10000){return;}  // break out if connection is lost 
+    }// end of while
   }
 
   eventSerial();
+//  checkKeys();
 
 }  // end draw
 
@@ -151,23 +153,35 @@ void mousePressed() {
 }
 
 
-
-void bufferImage(){
+// THIS NEEDS VARIANT TO SELECT ARBITRARY PIXEL IN FRAME
+// THIS NEEDS VARIANT TO SELECT PIXEL IN EACH INDIVIDUAL FRAME
+void bufferImage(){  
    loadPixels();  // loads 96x96 gif frame into pixel array
      int pix = 0;
      byte b;
-     int byteCounter = 0;
+     
+       if(frameNum == 0){  // lock the backgound color
+         switch(option){
+           case 'a': case 'A':
+             firstPixel = pixels[0];
+             break;
+           case 'c':  // THIS IS NOT WORKING YET...
+             firstPixel = pixels[((LCDheight/2)*width) + (LCDwidth/2)]; // select the center of the image
+             break;
+           default:
+             break;
+         }  
+         println("first pixel = " + firstPixel);
+       }
+     byteCounter = 0;
      for (int i=0; i<LCDheight; i++){  // sort through the image area only
        for (int j=0; j<LCDwidth; j++){  // sort through the image area only
-         if(pix == 0) {println(pixels[pix]);}  //  print out the  of the background, if you like
-         if (pixels[pix] == pixels[0]){  // follow the background
-//           b = 0x00;
-           if(option){b = 0x00;}else{b = 0x01;}
-//           print("0");   // verbose
-         }else{    // test if the pixel is white or black
-           if(option){b = 0x01;}else{b = 0x00;}
-//           print("1"); // verbose
-         }
+         // if(pix == 0) {println(pixels[pix]);}  //  print out the color of the background, if you like
+           if (pixels[pix] == firstPixel){  // follow the first pixel of the first frame
+             if(option >= 'a'){b = 0x00;}else{b = 0x01;} 
+           }else{    // test if the pixel is white or black
+             if(option <= 'a'){b = 0x01;}else{b = 0x00;}
+           }
          pix++;
          picData[byteCounter] <<= 1;
          picData[byteCounter] += b;    // log the pixel in the byte array
@@ -187,8 +201,8 @@ void sendStartText(){
   println("press 'P' to print the frame displayed to console in 1s and 0s");
   println("Press 'a' to initiate gif load pixel True");
   println("Press 'E' to erase the EEPROM");
-  println("Press 'A' to initiate gif load pixel inverted");
-  println("Contents of EEPROM:\n");
+  println("Press 'bb' to initiate gif load pixel inverted");
+  println("Press 'E' to erase entire contents of EEPROM. No turning back!");
 }
 
 void updateText(){
@@ -202,10 +216,12 @@ void updateText(){
   text("press 'l' to advance gif one frame with rollover",lineStart,(textLine+=lineHeight));
   text("Press 'a' to initiate gif load pixel true",lineStart,(textLine+=lineHeight));
   text("Press 'A' to initiate gif load pixel inverted",lineStart,(textLine+=lineHeight));
-  text("Press 'E' to erase the EEPROM. No turning back.",lineStart,(textLine+=lineHeight));
+  text("Press 'E' to erase the EEPROM. No turning back!",lineStart,(textLine+=lineHeight));
   textLine+=lineHeight;  // add a space
-  text("Gif " + (gifNumber+1) + " of " + currentGif.size() + " has "+gifFrames.length + " frames  Frame Rate: " + delays[0],outdent,textLine+=lineHeight);
-  text("Use UP DOWN to select gif",outdent,(textLine+=lineHeight));
+  text("Gif " + (gifNumber+1) + " of " + currentGif.size() + " has "+gifFrames.length + " frames  Frame Rate: " + delays[0],indent,textLine+=lineHeight);
+  text("Use UP DOWN to select gif",indent,(textLine+=lineHeight));
+
+  feedbackTextLine = textLine + lineHeight;  // advance the line, expecting to write watch data soon
 
 }
 
@@ -228,7 +244,7 @@ void getCurrentGif(int name){
 
 void getWatchData(){
   fill(txtFill);
-  feedbackTextLine = textLine+=lineHeight;
-  text("Contents of EEPROM:",outdent,(feedbackTextLine+=lineHeight));
-  bone.write('#');  // sending # makes watch barf eeprom contents 
+//  feedbackTextLine = textLine+=lineHeight;
+//  text("Contents of EEPROM:",indent,(feedbackTextLine+=lineHeight));
+  bone.write('=');  // sending = makes watch barf eeprom contents
 }

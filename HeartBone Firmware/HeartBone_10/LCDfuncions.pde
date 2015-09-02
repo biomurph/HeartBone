@@ -20,15 +20,15 @@ void sendLCDprompt(){
   display.println("        *");
   display.print(" reset    sleep ");
   display.refresh();
-  
+
 }
 
 void clearScreen(){
 	display.spi.setSelect(HIGH);
-        
+
 	display.spi.transfer(CLEAR);	// send clear command
 	display.spi.transfer(0x00);		// send trailer
-        
+
 	display.spi.setSelect(LOW);
 }
 
@@ -90,39 +90,39 @@ void drawFrame(){
 
 
 // all black
-void blackScreen(){
-	display.spi.setSelect(HIGH);
-        
-	display.spi.transfer(DYNAMIC);
-	for(int i=1; i<=96; i++){   // send the line number, pixel data, trailer
-	  byte line = reverse(i);	    // little-endian, please
-	  display.spi.transfer(line);	    // send line number
-	  for(int i=1; i<=12; i++){
-	    display.spi.transfer(0x00);     // send line data (96 bits of nothing)
-	  }
-	  display.spi.transfer(0x00);	    // send trailer
-	}
-	display.spi.transfer(0x00);	    // send final trailer
-
-	display.spi.setSelect(LOW);
-}
-
-// writes all bytes to the passed byte and displays on screen
-void writeLines(byte b){
-        display.spi.setSelect(HIGH);
-        
-	display.spi.transfer(DYNAMIC);
-	for(int i=1; i<=96; i++){   // send the line number, pixel data, trailer
-	  byte line = reverse(i);	    // little-endian, please
-	  display.spi.transfer(line);	    // send line number
-	  for(int i=1; i<=12; i++){
-	    display.spi.transfer(b);     // send line data (96 bits of nothing)
-	  }
-	  display.spi.transfer(0x00);	    // send trailer
-	}
-	display.spi.transfer(0x00);	    // send final trailer
-
-	display.spi.setSelect(LOW);
-}
+//void blackScreen(){
+//	display.spi.setSelect(HIGH);
+//
+//	display.spi.transfer(DYNAMIC);
+//	for(int i=1; i<=96; i++){   // send the line number, pixel data, trailer
+//	  byte line = reverse(i);	    // little-endian, please
+//	  display.spi.transfer(line);	    // send line number
+//	  for(int i=1; i<=12; i++){
+//	    display.spi.transfer(0x00);     // send line data (96 bits of nothing)
+//	  }
+//	  display.spi.transfer(0x00);	    // send trailer
+//	}
+//	display.spi.transfer(0x00);	    // send final trailer
+//
+//	display.spi.setSelect(LOW);
+//}
+//
+//// writes all bytes to the passed byte and displays on screen
+//void writeLines(byte b){
+//        display.spi.setSelect(HIGH);
+//
+//	display.spi.transfer(DYNAMIC);
+//	for(int i=1; i<=96; i++){   // send the line number, pixel data, trailer
+//	  byte line = reverse(i);	    // little-endian, please
+//	  display.spi.transfer(line);	    // send line number
+//	  for(int i=1; i<=12; i++){
+//	    display.spi.transfer(b);     // send line data (96 bits of nothing)
+//	  }
+//	  display.spi.transfer(0x00);	    // send trailer
+//	}
+//	display.spi.transfer(0x00);	    // send final trailer
+//
+//	display.spi.setSelect(LOW);
+//}
 
 

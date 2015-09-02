@@ -1,57 +1,51 @@
 
 
-
+//void checkKeys(){
 void keyPressed() {
   char token = key;
-  if(safeToken(token)){bone.write(token);};  // verbose serial to bone but not the special chars
   switch(token){
-    case 'o':
-      bufferImage();
 
-      break;
     case 'l':
       frameNum++;
       if (frameNum > gifFrames.length-1) {
         frameNum = 0;
       }
       break;
-    case 'a':  // Serial back and forth to trigger frame sending
+      
+    case 'a': case 'A': case 'c': // Serial back and forth to trigger frame sending
       if(!enoughMemory()){return;}
-      option = true;
-      bufferImage();  // load the frame into the frame buffer
-      byteCounter = 0;
-      playingGif = false;
-      frameNum = 0;
-      bone.write('a');  // send the 'a' to then get a '!' to start sending the frame
-      frameRate(200);
+      setOption(token);
       break;
-    case 'A':
-      if(!enoughMemory()){return;}
-      option = false;
-      bufferImage();  // load the frame into the frame buffer
-      byteCounter = 0;
-      bone.write('a');  // send the 'a' to then get a '!' to start sending the frame
-      frameRate(200);
-      break;
+      
+//    case 'A':   // invert the pixel values
+//      if(!enoughMemory()){return;}
+//      option = 2;
+//      byteCounter = 0;
+//      frameNum = 0;
+//      playingGif = false;
+//      nextFrame = true;
+//      break;
+      
+      
     case 'P':  // 'P' prints the frame to the IDE terminal in 1s and 0s for fun
       loadPixels();  // this grabs the entire pixel array
-      option = true;
+      option = 'a';
       printPixels();
       break;
     case 'p':
       playingGif = !playingGif;  // toggle the boolean?
       break;
-    case 'r':  // 'p' plays the gif one time through at the current frame rate
-      playingGif = true;
-      startOfFrameMillis = millis();
-      break;
-    case '#':
-      bone.write('#');
+    case '=':
+      getWatchData();
       break;
     case '0': case '1': case'2': case'3': case'4': case'5': case'6': case'7': case'8': case'9':
 //    The gif number is sent to the watch
-      bone.write('#');  // send '#' to get watch info
+      bone.write(token);
+      getWatchData();  
       break;
+    case 'E':
+      bone.write(token);  // ERASE EEPROM ON WATCH!
+      break; 
     default:
       break;
   }
@@ -86,30 +80,26 @@ void keyPressed() {
         break;
     }
   }
+}// end of keyPressed
+
+
+void setOption(char o){
+  option = o;
+  byteCounter = 0;
+  frameNum = 0;
+  playingGif = false;
+  nextFrame = true;
 }
 
 void clearTerm(){
   noStroke();
   fill(bgrnd);
-  rect(0,textLine,width,height);
+  rect(0,textLine+lineHeight,width,height);
   fill(txtFill);
-  feedbackTextLine = textLine+lineHeight*2;
-  text("Contents of EEPROM:",outdent,(feedbackTextLine));
+  feedbackTextLine = textLine+lineHeight;
   boneString = " ";
 }
 
-boolean safeToken(char t){
-  boolean safe = true;
-  switch(t){
-    case 'a': safe = false; break;
-    case 'A': safe = false; break;
-    case 'x': safe = false; break;
-    case '#': safe = false; break;
-    default:
-    break;
-  }
-  return safe;
-}
 
 
 
@@ -118,13 +108,12 @@ void printPixels(){
   int pix = 0;   // pixel counter
     for (int i=0; i<LCDheight; i++){  // sort through the image area only
       for (int j=0; j<LCDwidth; j++){  // sort through the image area only
-        if(pix == 0) {println(pixels[pix]);}  //  print out the  of the background, if you like
-//          print(pixels[pix]);
-        if (pixels[pix] == pixels[0]){  // follow the background (add param to flip)
-//          if (pixels[pix] == -16777216){  // -16777216 appears to be black
-          if(option){print('0');}else{print('1');}
-        }else{
-          if(option){print('1');}else{print('0');}
+        if(pix == 0) {println(pixels[pix]);}  //  print out the  background value for reference
+        if (pixels[pix] == pixels[0]){  // follow the background (this is important for resolving the image)
+//          if (pixels[pix] == -16777216){  // -16777216 appears to be black??
+          print('0');
+        }else{  // option will invert the pixel value
+          print('1');
         }
         pix++;
       }
@@ -141,7 +130,8 @@ boolean enoughMemory(){
     is = true;
   }else{
     print("not enough memory");
-    text("not enough memory for " + gifName,outdent,(feedbackTextLine + lineHeight));
+    text("not enough memory for " + gifName,indent,(feedbackTextLine + lineHeight));
   }
   return is;
 }
+
