@@ -1,14 +1,14 @@
 /*
 
   HEARTBONE WATCH INTERFACE PROGRAM
-  
+
   NOTES:
 
 
  */
 
 import gifAnimation.*;  // get the gif tools
-import processing.serial.*;  // get the serial com 
+import processing.serial.*;  // get the serial com
 
 int FRAME_LENGTH = 1152;  // number of bytes in each frame
 
@@ -62,11 +62,11 @@ void setup() {
   frameRate(60);
   font = loadFont("Monaco-16.vlw");
   textFont(font, 16);
-  
+
   loadGifs();  // get list of stored gifs from data file
   getCurrentGif(gifNumber);  // load th first gif to diplay on screen
   sendStartText();  // show prompts on console
-  
+
   println(Serial.list());  // list the serial ports available
   bone = new Serial(this, Serial.list()[9], 115200);  // open port at baudrate
 
@@ -94,7 +94,7 @@ void draw() {
     }
   }
 
-  if(nextFrame){    //  
+  if(nextFrame){    //
     println("buffering");
     bufferImage();  // load the frame into the frame buffer
     byteCounter = 0;
@@ -108,7 +108,7 @@ void draw() {
       byteCounter++;
       timeOut = millis();
     }
-    
+
     while(sendingFrame == true){  //
       if(bone.available() > 0){
         char test = char(bone.read());
@@ -119,14 +119,14 @@ void draw() {
           if(byteCounter%256 == 0){
             println(byteCounter + " bytes sent");
           }
-          if(byteCounter == FRAME_LENGTH){  // 
+          if(byteCounter == FRAME_LENGTH){  //
             sendingFrame = false;
             byteCounter = 0;
           }
         }
       }//end of if
       delay(1);  // how small can this be?
-      if(millis() - timeOut > 10000){return;}  // break out if connection is lost 
+      if(millis() - timeOut > 10000){return;}  // break out if connection is lost
     }// end of while
   }
 
@@ -138,7 +138,7 @@ void draw() {
 
 int[] getDelays(String filename, int numFrames){
    GifDecoder gifDecoder = new GifDecoder();
-   gifDecoder.read(openStream(filename));
+   gifDecoder.read(filename); // openStream(filename));
   // int n = gifDecoder.getFrameCount();
 
   for(int i=0; i<numFrames; i++){
@@ -155,11 +155,11 @@ void mousePressed() {
 
 // THIS NEEDS VARIANT TO SELECT ARBITRARY PIXEL IN FRAME
 // THIS NEEDS VARIANT TO SELECT PIXEL IN EACH INDIVIDUAL FRAME
-void bufferImage(){  
+void bufferImage(){
    loadPixels();  // loads 96x96 gif frame into pixel array
      int pix = 0;
      byte b;
-     
+
        if(frameNum == 0){  // lock the backgound color
          switch(option){
            case 'a': case 'A':
@@ -170,7 +170,7 @@ void bufferImage(){
              break;
            default:
              break;
-         }  
+         }
          println("first pixel = " + firstPixel);
        }
      byteCounter = 0;
@@ -178,7 +178,7 @@ void bufferImage(){
        for (int j=0; j<LCDwidth; j++){  // sort through the image area only
          // if(pix == 0) {println(pixels[pix]);}  //  print out the color of the background, if you like
            if (pixels[pix] == firstPixel){  // follow the first pixel of the first frame
-             if(option >= 'a'){b = 0x00;}else{b = 0x01;} 
+             if(option >= 'a'){b = 0x00;}else{b = 0x01;}
            }else{    // test if the pixel is white or black
              if(option <= 'a'){b = 0x01;}else{b = 0x00;}
            }
