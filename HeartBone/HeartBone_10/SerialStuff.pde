@@ -73,4 +73,3 @@ void scroll(){
   fill(txtFill);
   text(boneString,indent,(feedbackTextLine + lineHeight));
 }
-

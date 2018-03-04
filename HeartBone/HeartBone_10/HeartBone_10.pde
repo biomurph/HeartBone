@@ -68,7 +68,7 @@ void setup() {
   sendStartText();  // show prompts on console
 
   println(Serial.list());  // list the serial ports available
-  bone = new Serial(this, Serial.list()[9], 115200);  // open port at baudrate
+  bone = new Serial(this, Serial.list()[0], 115200);  // open port at baudrate
 
   // START THE SHOW
   background(bgrnd);  // neutral grey background
@@ -138,7 +138,7 @@ void draw() {
 
 int[] getDelays(String filename, int numFrames){
    GifDecoder gifDecoder = new GifDecoder();
-   gifDecoder.read(filename); // openStream(filename));
+   gifDecoder.read(createInput(filename));
   // int n = gifDecoder.getFrameCount();
 
   for(int i=0; i<numFrames; i++){
