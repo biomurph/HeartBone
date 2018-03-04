@@ -100,7 +100,20 @@ The program window contains information about gifs stored on the Heart Bone, and
 ### E
 *	press E to erase all of the stored gifs on your Heart Bone. Heart Bone has room for up to 100 gif frames. They can be divided into up to 9 gifs (this is arbitrary and can change). If you try to load a gif with more frames than are available, you will get an error message.
 
-#Troubleshooting
+### 1, 2, 3, 4, 5, 6, 7, 8, 9
+* Press a number to play gifs that are stored on the Heartbone. When connected, you will see a list of gifs that are already on your Heartbone, and if you want to know which is which, you can play them by pressing their associated number.
+
+# Adding Your Own GIF
+* You can add your own gif to the list of gifs by saving it in the `data` folder inside the sketch folder. Follow these steps:
+	* First, make sure your gif color is as close to BLACK and WHITE as possible, and that your gif is only 96 x 96 pixels big. Also make sure that it has a maximum Frame length of 100 frames.
+	* Save the give in the `data` folder inside the sketch folder `User/Documents/Processing/HeartBone_10/data/`
+	* Then add your gif to the `load_gifs.pde` file by creating an append to the list in the `loadGifs()` function with the line
+
+			currentGif.append("your_cool_gif.gif");
+
+	When you restart the sketch, you will find your gif in the mix.
+
+# Troubleshooting
 
 When in doubt, reboot. Start everything over from the top. Unplug, and the plug again. Re-read these documents, and then email me if it's really broken.
 
