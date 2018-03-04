@@ -253,10 +253,13 @@ public void updateText(){
   text("press 'p' to toggle gif animation on/off",lineStart,(textLine+=lineHeight));
   text("press 'P' to print frame in 1s & 0s to terminal",lineStart,(textLine+=lineHeight));
   text("press 'l' to advance gif one frame with rollover",lineStart,(textLine+=lineHeight));
-  text("Press 'a' to initiate gif load pixel true",lineStart,(textLine+=lineHeight));
-  text("Press 'A' to initiate gif load pixel inverted",lineStart,(textLine+=lineHeight));
-  text("Press 'E' to erase the EEPROM. No turning back!",lineStart,(textLine+=lineHeight));
-  textLine+=lineHeight;  // add a space
+  if(serialBoneFound){
+    text("Press 'a' to initiate gif load pixel true",lineStart,(textLine+=lineHeight));
+    text("Press 'A' to initiate gif load pixel inverted",lineStart,(textLine+=lineHeight));
+    text("Press 'E' to erase the EEPROM. No turning back!",lineStart,(textLine+=lineHeight));
+    text("Press '1' -- '9' to play stored gifs listed below",lineStart,(textLine+=lineHeight));
+  }
+  textLine = 150; //+=lineHeight;  // add a space
   text("Gif " + (gifNumber+1) + " of " + currentGif.size() + " has "+gifFrames.length + " frames  Frame Rate: " + delays[0],indent,textLine+=lineHeight);
   text("Use UP DOWN to select gif",indent,(textLine+=lineHeight));
 
