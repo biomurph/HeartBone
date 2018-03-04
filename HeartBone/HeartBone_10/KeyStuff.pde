@@ -11,12 +11,16 @@ void keyPressed() {
         frameNum = 0;
       }
       break;
-      
+
     case 'a': case 'A': case 'c': // Serial back and forth to trigger frame sending
       if(!enoughMemory()){return;}
-      setOption(token);
+      if(serialBoneFound){
+        setOption(token);
+      } else {
+        println("No Bone Connected!");
+      }
       break;
-      
+
 //    case 'A':   // invert the pixel values
 //      if(!enoughMemory()){return;}
 //      option = 2;
@@ -25,8 +29,8 @@ void keyPressed() {
 //      playingGif = false;
 //      nextFrame = true;
 //      break;
-      
-      
+
+
     case 'P':  // 'P' prints the frame to the IDE terminal in 1s and 0s for fun
       loadPixels();  // this grabs the entire pixel array
       option = 'a';
@@ -36,16 +40,28 @@ void keyPressed() {
       playingGif = !playingGif;  // toggle the boolean?
       break;
     case '=':
-      getWatchData();
+      if(serialBoneFound){
+        getWatchData();
+      } else {
+        println("No Bone Connected!");
+      }
       break;
     case '0': case '1': case'2': case'3': case'4': case'5': case'6': case'7': case'8': case'9':
-//    The gif number is sent to the watch
-      bone.write(token);
-      getWatchData();  
+      if(serialBoneFound){
+        //    The gif number is sent to the watch
+        bone.write(token);
+        getWatchData();
+      } else {
+        println("No Bone Connected!");
+      }
       break;
     case 'E':
-      bone.write(token);  // ERASE EEPROM ON WATCH!
-      break; 
+      if(serialBoneFound){
+        bone.write(token);  // ERASE EEPROM ON WATCH!
+      } else {
+        println("No Bone Connected!");
+      }
+      break;
     default:
       break;
   }
@@ -60,9 +76,12 @@ void keyPressed() {
         }
         getCurrentGif(gifNumber);
         frameNum = 0;
-        background(50);
+        background(bgrnd);
+        refreshBones = true;
         updateText();
-        getWatchData();
+        if(serialBoneFound){
+          getWatchData();
+        }
         break;
       case DOWN:
         gifNumber--;
@@ -72,9 +91,12 @@ void keyPressed() {
           }
         getCurrentGif(gifNumber);
         frameNum = 0;
-        background(50);
+        background(bgrnd);
+        refreshBones = true;
         updateText();
-        getWatchData();
+        if(serialBoneFound){
+          getWatchData();
+        }
         break;
       default:
         break;
@@ -122,7 +144,7 @@ void printPixels(){
     }
     println("\n");  // dismount
   }
-  
+
 
 boolean enoughMemory(){
    boolean is = false;

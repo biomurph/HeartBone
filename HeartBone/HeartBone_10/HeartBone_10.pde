@@ -54,7 +54,13 @@ StringList currentGif;
 int  gifNumber = 0;  // the gif on display
 String gifName;
 
-
+// SERIAL PORT STUFF TO HELP YOU FIND THE CORRECT SERIAL PORT
+String serialBone;
+String[] serialBones = new String[Serial.list().length];
+boolean serialBoneFound = false;
+Radio[] button = new Radio[Serial.list().length*2];
+int numBones = serialBones.length;
+boolean refreshBones = true;
 
 int bgrnd = 50;
 void setup() {
@@ -62,77 +68,95 @@ void setup() {
   frameRate(60);
   font = loadFont("Monaco-16.vlw");
   textFont(font, 16);
+  textAlign(LEFT);
 
   loadGifs();  // get list of stored gifs from data file
   getCurrentGif(gifNumber);  // load th first gif to diplay on screen
   sendStartText();  // show prompts on console
+  background(bgrnd);  // neutral grey background
 
-  println(Serial.list());  // list the serial ports available
-  bone = new Serial(this, Serial.list()[0], 115200);  // open port at baudrate
+  // text("Select Your Serial Port",245,30);
+  // listAvailableBones();
 
   // START THE SHOW
-  background(bgrnd);  // neutral grey background
-  updateText();    // print commands and currentGif info to screen
-  getWatchData(); // formats to sketch window
+
+  // updateText();    // print commands and currentGif info to screen
+  // getWatchData(); // formats to sketch window
 
 }
 
 
 void draw() {
 
-  image(gifFrames[frameNum], 0, 0);  // display 96x96 pix image from the data file in Sketch folder
+    updateText();    // print commands and currentGif or serial port list info to screen
 
-  if(playingGif){
-    if(millis() - startOfFrameMillis > delays[frameNum]){
-      frameNum++;
-      startOfFrameMillis = millis();
+    image(gifFrames[frameNum], 0, 0);  // display 96x96 pix image from the data file in Sketch folder
 
-      if(frameNum == gifFrames.length){
-        frameNum = 0;
-//        playingGif = false;  // just once please
+    if(playingGif){
+      if(millis() - startOfFrameMillis > delays[frameNum]){
+        frameNum++;
+        startOfFrameMillis = millis();
+
+        if(frameNum == gifFrames.length){
+          frameNum = 0;
+  //        playingGif = false;  // just once please
+        }
       }
     }
-  }
 
-  if(nextFrame){    //
-    println("buffering");
-    bufferImage();  // load the frame into the frame buffer
-    byteCounter = 0;
-    bone.write('a');  // send the 'a' to then get a '!' and keep sending frames
-    nextFrame = false;  // reset nextFrame flag
-  }
-
-  if(sendingFrame == true){
-    if(byteCounter == 0){
-      bone.write(picData[byteCounter]);  // send the first byte
-      byteCounter++;
-      timeOut = millis();
+if(serialBoneFound){
+    if(nextFrame){    //
+      println("buffering");
+      bufferImage();  // load the frame into the frame buffer
+      byteCounter = 0;
+      bone.write('a');  // send the 'a' to then get a '!' and keep sending frames
+      nextFrame = false;  // reset nextFrame flag
     }
 
-    while(sendingFrame == true){  //
-      if(bone.available() > 0){
-        char test = char(bone.read());
-//        print(test);  // verbose
-        if(test == '*'){  // get a * from bone before sending next byte
-          bone.write(picData[byteCounter]);  // send the next byte
-          byteCounter++;
-          if(byteCounter%256 == 0){
-            println(byteCounter + " bytes sent");
+    if(sendingFrame == true){
+      if(byteCounter == 0){
+        bone.write(picData[byteCounter]);  // send the first byte
+        byteCounter++;
+        timeOut = millis();
+      }
+
+      while(sendingFrame == true){  //
+        if(bone.available() > 0){
+          char test = char(bone.read());
+  //        print(test);  // verbose
+          if(test == '*'){  // get a * from bone before sending next byte
+            bone.write(picData[byteCounter]);  // send the next byte
+            byteCounter++;
+            if(byteCounter%256 == 0){
+              println(byteCounter + " bytes sent");
+            }
+            if(byteCounter == FRAME_LENGTH){  //
+              sendingFrame = false;
+              byteCounter = 0;
+            }
           }
-          if(byteCounter == FRAME_LENGTH){  //
-            sendingFrame = false;
-            byteCounter = 0;
-          }
-        }
-      }//end of if
-      delay(1);  // how small can this be?
-      if(millis() - timeOut > 10000){return;}  // break out if connection is lost
-    }// end of while
+        }//end of if bone.available
+        delay(1);  // how small can this be?
+        if(millis() - timeOut > 10000){return;}  // break out if connection is lost
+      } // end of while sendingFrame
+    }
+
+    getWatchData(); // formats to sketch window
+    eventSerial();
+  //  checkKeys();
+  } else {
+    autoScanBones();
+
+    if(refreshBones){
+      refreshBones = false;
+      listAvailableBones();
+    }
+
+    for(int i=0; i<numBones; i++){  // add +1 to numBones if using 'Refresh Ports' button
+      button[i].overRadio(mouseX,mouseY);
+      button[i].displayRadio();
+    }
   }
-
-  eventSerial();
-//  checkKeys();
-
 }  // end draw
 
 
@@ -147,10 +171,6 @@ int[] getDelays(String filename, int numFrames){
   return delays;
 }
 
-
-void mousePressed() {
-
-}
 
 
 // THIS NEEDS VARIANT TO SELECT ARBITRARY PIXEL IN FRAME
@@ -247,4 +267,46 @@ void getWatchData(){
 //  feedbackTextLine = textLine+=lineHeight;
 //  text("Contents of EEPROM:",indent,(feedbackTextLine+=lineHeight));
   bone.write('=');  // sending = makes watch barf eeprom contents
+}
+
+void listAvailableBones(){
+  println(Serial.list());    // print a list of available serial ports to the console
+  serialBones = Serial.list();
+  fill(250,0,250);
+  feedbackTextLine += 50;
+  text("Select Your Serial Port",245,feedbackTextLine);
+  feedbackTextLine+=25;
+  fill(txtFill);
+  int yPos = 0;
+  int xPos = 35;
+  for(int i=serialBones.length-1; i>=0; i--){
+    button[i] = new Radio(xPos, feedbackTextLine+(yPos*20),12,color(180),color(80),color(255),i,button);
+    text(serialBones[i],xPos+15, feedbackTextLine+5+(yPos*20));
+
+    yPos++;
+    if(yPos > height-30){
+      yPos = 0; xPos+=200;
+    }
+  }
+  // int p = numBones;
+  //  fill(233,0,0);
+  // button[p] = new Radio(35, feedbackTextLine+(yPos*20),12,color(180),color(80),color(255),p,button);
+  //   text("Refresh Serial Port List",50, feedbackTextLine+5+(yPos*20));
+
+}
+
+void autoScanBones(){
+  if(Serial.list().length != numBones){
+    if(Serial.list().length > numBones){
+      println("New Ports Opened!");
+      int diff = Serial.list().length - numBones;	// was serialPorts.length
+      serialBones = expand(serialBones,diff);
+      numBones = Serial.list().length;
+    }else if(Serial.list().length < numBones){
+      println("Some Ports Closed!");
+      numBones = Serial.list().length;
+    }
+    refreshBones = true;
+    return;
+  }
 }
