@@ -45,7 +45,7 @@ Plug your Heart Bone into the USB cable. If you see a red LED light up, you know
 
 The sketch will prompt you to connect to select the Heartbone serial port. This is the same port name that you selected when you uploaded code to the Heartbone in Arduino. The port you want is usually at the top of the ports list. If you're Heartbone is not connected, just plug it in and the Serial ports list will automagically update.
 
-![image](images/SelectSerialPort.png)
+![image coming soon](images/SelectSerialPort.png)
 
 # Heart Bone Control
 
