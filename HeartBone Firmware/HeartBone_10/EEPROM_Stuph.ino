@@ -50,7 +50,8 @@ void EEreadBytes(int address, int numBytes)
   digitalWrite(EE_SS,LOW);
   display.spi.transfer(READ_EE);
   for(int i=2; i>=0; i--){
-    display.spi.transfer((address>>(i*8)) & 0xFF);
+    byte b = address>>(i*8);
+    display.spi.transfer(b & 0xFF);  // send the address
   }
   for(int i=0; i<numBytes; i++){
     page[i] = display.spi.transfer(0x00);
@@ -64,7 +65,8 @@ void EEreadSleepyBytes()
   digitalWrite(EE_SS,LOW);
   display.spi.transfer(READ_EE);
   for(int i=2; i>=0; i--){
-    display.spi.transfer((sleepyFlagEEdress>>(i*8)) & 0xFF);
+    byte b = sleepyFlagEEdress>>(i*8);
+    display.spi.transfer(b & 0xFF);  // send the address
   }
   for(int i=0; i<numSleepyBytes; i++){
     sleepyBytes[i] = display.spi.transfer(0x00);
@@ -80,7 +82,8 @@ uint8_t EEreadByte(int address)
   digitalWrite(EE_SS,LOW);
   display.spi.transfer(READ_EE);
   for(int i=2; i>=0; i--){
-    display.spi.transfer((address>>(i*8)) & 0xFF);
+    byte b = address>>(i*8);
+    display.spi.transfer(b & 0xFF);  // send the address
   }
   inByte = display.spi.transfer(0x00);
 
@@ -94,7 +97,8 @@ void readFrame(int address)
   digitalWrite(EE_SS,LOW);
   display.spi.transfer(READ_EE);
   for(int i=2; i>=0; i--){
-    display.spi.transfer((address>>(i*8)) & 0xFF);
+    byte b = address>>(i*8);
+    display.spi.transfer(b & 0xFF);  // send the address
   }
   for(int i=0; i<1152; i++){	// 96X96/8 = 1152
     display.sharpmem_buffer[i] = display.spi.transfer(0x00);
@@ -122,7 +126,8 @@ void EEwritePage(int address)  // write the entire page buffer starting at addre
   digitalWrite(EE_SS,LOW);
   display.spi.transfer(WRITE_EE);	// send write command
   for(int i=2; i>=0; i--){
-    display.spi.transfer((address>>(i*8)) & 0xFF);	// send the address
+    byte b = address>>(i*8);
+    display.spi.transfer(b & 0xFF);  // send the address
   }
   for(int i=0; i<pageSize; i++){	// 256 bytes per page
     display.spi.transfer(page[i]);
@@ -147,7 +152,8 @@ void EEwriteByte(int address, uint8_t outByte)  // write a single byte
   digitalWrite(EE_SS,LOW);
   display.spi.transfer(WRITE_EE);
   for(int i=2; i>=0; i--){
-    display.spi.transfer((address>>(i*8)) & 0xFF);	// send the address
+    byte b = address>>(i*8);
+    display.spi.transfer(b & 0xFF);  // send the address
   }
   display.spi.transfer(outByte);                  // send the lonley byte
   digitalWrite(EE_SS,HIGH);
@@ -171,7 +177,8 @@ void EEwriteBytes(int address, int numBytes)  // write numBytes starting at addr
   digitalWrite(EE_SS,LOW);
   display.spi.transfer(WRITE_EE);
   for(int i=2; i>=0; i--){
-    display.spi.transfer((address>>(i*8)) & 0xFF);	// send the address
+    byte b = address>>(i*8);
+    display.spi.transfer(b & 0xFF);  // send the address
   }
   for(int i=0; i<numBytes; i++){	// 256 bytes per page
     display.spi.transfer(page[i]);
@@ -197,7 +204,8 @@ void EEwriteSleepyBytes()  // write numBytes starting at address
   digitalWrite(EE_SS,LOW);
   display.spi.transfer(WRITE_EE);
   for(int i=2; i>=0; i--){
-    display.spi.transfer((sleepyFlagEEdress>>(i*8)) & 0xFF);	// send the address
+    byte b = sleepyFlagEEdress>>(i*8);
+    display.spi.transfer(b & 0xFF);	// send the address
   }
   for(int i=0; i<numSleepyBytes; i++){	// sleepyFlag, activeGif, activeGifFrameCounter
     display.spi.transfer(sleepyBytes[i]);
