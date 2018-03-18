@@ -35,7 +35,9 @@
       Writes and reads with the MCP25L1024
 
   NEEDS
-    a way to 'reflect' play frames back and forth
+    a way to 'reflect' play frames forward and backward.
+
+  UPDATED March of 2017 to work with Arduino IDE by Joel Murphy
 
  */
 
