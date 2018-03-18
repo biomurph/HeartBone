@@ -106,7 +106,7 @@ The program window contains information about gifs stored on the Heart Bone, and
 # Adding Your Own GIF
 * You can add your own gif to the list of gifs by saving it in the `data` folder inside the sketch folder. Follow these steps:
 	* First, make sure your gif color is as close to BLACK and WHITE as possible, and that your gif is only 96 x 96 pixels big. Also make sure that it has a maximum Frame length of 100 frames.
-	* Save the give in the `data` folder inside the sketch folder `User/Documents/Processing/HeartBone_10/data/`
+	* Save the gif in the `data` folder inside the sketch folder `User/Documents/Processing/HeartBone_10/data/`
 	* Then add your gif to the `load_gifs.pde` file by creating an append to the list in the `loadGifs()` function with the line
 
 			currentGif.append("your_cool_gif.gif");
