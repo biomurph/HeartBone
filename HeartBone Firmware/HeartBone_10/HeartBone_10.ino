@@ -31,8 +31,8 @@
       Could be implemented for algorithmic animation or ascii art
     HeartBoneWatch
       portage of Adafruit_SharpMem library to DP_32
-    MCP_EEPROM
-      Writes and reads with the MCP25L1024
+    MCP_EEPROM http://ww1.microchip.com/downloads/en/DeviceDoc/22064D.pdf
+      Writes and reads with the MCP25L1024 
 
   NEEDS
     a way to 'reflect' play frames forward and backward.
