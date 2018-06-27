@@ -27,6 +27,7 @@ void mousePressed(){
           bone.clear();            // flush buffer
           bone.bufferUntil('\n');  // set buffer full flag on receipt of carriage return
           serialBoneFound = true;
+          newBone = true;
         }
         catch(Exception e){
           println("Couldn't open port " + Serial.list()[i]);

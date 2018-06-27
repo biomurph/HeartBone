@@ -17,7 +17,7 @@ void readButtons(){
   if(buttonState[i] != lastButtonState[i]){
     if(buttonState[i] == HIGH){
       buttonPressed[i] = true;
-      Serial.print("pressed "); Serial.println(i);  // verbose
+      if(verbish){ Serial.print("pressed "); Serial.println(i); } 
     }
     lastButtonState[i] = buttonState[i];
   }
@@ -45,7 +45,7 @@ void readButtons(){
        if(buttonPressed[WAKE]){
          buttonPressed[WAKE] = false;
          loadingFrameBuffer = false;  // BUG CLEARANCE
-         sleepyBytes[0] = 0x88;  // clear the sleepy flag
+         sleepyBytes[0] = 0x77;  // clear the sleepy flag
          EEwriteSleepyBytes();
          sendLCDprompt();  // home screen LCD display
 //         display.print("  Not Sleeping"); display.refresh();  // verbose
@@ -84,6 +84,7 @@ void readButtons(){
              sendLCDprompt();  // home screen LCD display
              activeGif = 0;
              sendGifToLCD = false;
+             if(verbish){ Serial.println("No gifs :("); }
            }
          }
        }

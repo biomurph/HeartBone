@@ -42,9 +42,10 @@ int lineHeight = 20;
 int lineStart = 210;
 int indent = 50;
 int feedbackTextLine;
-String boneString = " ";
+String bufferString = "";
+String boneString = "";
 boolean receivingFromBone = false;
-String scrollString = " ";
+String scrollString = "";
 
 // FRAME STUFF
 int frameNum = 0;  // used to step through frames
@@ -77,6 +78,7 @@ String gifName;
 String serialBone;
 String[] serialBones = new String[Serial.list().length];
 boolean serialBoneFound = false;
+boolean newBone = false;
 Radio[] button = new Radio[Serial.list().length*2];
 int numBones = serialBones.length;
 boolean refreshBones = true;
@@ -92,7 +94,7 @@ public void setup() {
   loadGifs();  // get list of stored gifs from data file
   getCurrentGif(gifNumber);  // load th first gif to diplay on screen
   sendStartText();  // show prompts on console
-  background(bgrnd);  // neutral grey background
+  // background(bgrnd);  // neutral grey background
 
   // text("Select Your Serial Port",245,30);
   // listAvailableBones();
@@ -106,7 +108,7 @@ public void setup() {
 
 
 public void draw() {
-
+  background(bgrnd);
     updateText();    // print commands and currentGif or serial port list info to screen
 
     image(gifFrames[frameNum], 0, 0);  // display 96x96 pix image from the data file in Sketch folder
@@ -160,16 +162,18 @@ if(serialBoneFound){
       } // end of while sendingFrame
     }
 
-    getWatchData(); // formats to sketch window
+    if(newBone){ newBone = false; getWatchData(); } // formats to sketch window
+    writeBoneData();
+
     eventSerial();
   //  checkKeys();
   } else {
     autoScanBones();
 
-    if(refreshBones){
-      refreshBones = false;
+    // if(refreshBones){
+    //   refreshBones = false;
       listAvailableBones();
-    }
+    // }
 
     for(int i=0; i<numBones; i++){  // add +1 to numBones if using 'Refresh Ports' button
       button[i].overRadio(mouseX,mouseY);
@@ -250,6 +254,9 @@ public void updateText(){
   gifName = currentGif.get(gifNumber);
   gifName = gifName.substring(0,gifName.length()-4);
   text(gifName,10,120);
+  text("Gif " + (gifNumber+1) + " of " + currentGif.size() + " has "+gifFrames.length + " frames  Frame Rate: " + delays[0],lineStart,textLine+=lineHeight);
+  text("Use UP DOWN to select gif",lineStart,(textLine+=lineHeight));
+  textLine+=lineHeight;
   text("press 'p' to toggle gif animation on/off",lineStart,(textLine+=lineHeight));
   text("press 'P' to print frame in 1s & 0s to terminal",lineStart,(textLine+=lineHeight));
   text("press 'l' to advance gif one frame with rollover",lineStart,(textLine+=lineHeight));
@@ -259,9 +266,9 @@ public void updateText(){
     text("Press 'E' to erase the EEPROM. No turning back!",lineStart,(textLine+=lineHeight));
     text("Press '1' -- '9' to play stored gifs listed below",lineStart,(textLine+=lineHeight));
   }
-  textLine = 150; //+=lineHeight;  // add a space
-  text("Gif " + (gifNumber+1) + " of " + currentGif.size() + " has "+gifFrames.length + " frames  Frame Rate: " + delays[0],indent,textLine+=lineHeight);
-  text("Use UP DOWN to select gif",indent,(textLine+=lineHeight));
+  // textLine +=lineHeight*3;  // add a space
+  // text("Gif " + (gifNumber+1) + " of " + currentGif.size() + " has "+gifFrames.length + " frames  Frame Rate: " + delays[0],indent,textLine+=lineHeight);
+  // text("Use UP DOWN to select gif",indent,(textLine+=lineHeight));
 
   feedbackTextLine = textLine + lineHeight;  // advance the line, expecting to write watch data soon
 
@@ -292,7 +299,7 @@ public void getWatchData(){
 }
 
 public void listAvailableBones(){
-  println(Serial.list());    // print a list of available serial ports to the console
+  // println(Serial.list());    // print a list of available serial ports to the console
   serialBones = Serial.list();
   fill(250,0,250);
   feedbackTextLine += 50;
@@ -494,18 +501,25 @@ public boolean enoughMemory(){
 
 public void eventSerial(){
   if(!sendingFrame){
+    String s = "";
   while(bone.available() > 0){
     char inChar = PApplet.parseChar(bone.read());
-    print(inChar);
+    // print(inChar);
 
     if(receivingFromBone){   // do this when we get a '#' as prefix
-      if(inChar == '\n'){    // TRY SWAPPING THE $ AND \n TO MAKE THE BONE CODE NICER
-        writeBoneData();     // write the line when you get the '\n'
-        boneString = " ";
+      if(inChar == '$'){
+        receivingFromBone = false;
+        boneString = "";
+        boneString = bufferString;
+        bufferString = "";
+        return;   // receiving is done
+
+      // if(inChar == '\n'){    // TRY SWAPPING THE $ AND \n TO MAKE THE BONE CODE NICER
+      //   writeBoneData();     // write the line when you get the '\n'
+      //   boneString = " ";
       }else{
-        boneString+=inChar;  // or, save the char to the string
+        bufferString += inChar;  // or, save the char to the string
       }
-      if(inChar == '$'){receivingFromBone = false; boneString = " ";}  // receiving is done
 //      return;  // this really slows it down...
     }
     else  // when not receiving data from watch look for command characters
@@ -536,9 +550,11 @@ public void eventSerial(){
         receivingFromBone = true;
         break;
       case '=':
-        while(bone.available() == 0){}
-        availableFrames = PApplet.parseInt(bone.read());
-        print(" " + availableFrames + " frames available");
+        while(bone.available() > 0){
+          s += PApplet.parseByte(bone.read());
+        }
+          availableFrames = PApplet.parseInt(s);
+          print(" " + availableFrames + " frames available");
         break;
       case '~':
         while(bone.available() == 0){}
@@ -620,6 +636,7 @@ public void mousePressed(){
           bone.clear();            // flush buffer
           bone.bufferUntil('\n');  // set buffer full flag on receipt of carriage return
           serialBoneFound = true;
+          newBone = true;
         }
         catch(Exception e){
           println("Couldn't open port " + Serial.list()[i]);

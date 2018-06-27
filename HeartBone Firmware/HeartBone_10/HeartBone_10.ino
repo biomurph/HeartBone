@@ -99,41 +99,55 @@ unsigned int sleepyFlagEEdress = pageSize*5*102; // place to store sleep info on
 const int numSleepyBytes = 3;  // 0=sleep/!sleep, 1=activeGif, 2=currentFrame
 byte sleepyBytes[numSleepyBytes];  // array to hold sleep data
 
+boolean verbish = true;
+
 void setup(){  // here we go
   Serial.begin(115200);  // TRY HIGHER DATA RATES TO MAXIMIZE SPEED
-  delay(30); // DON'T STARTLE THE SLEEPY (this seems to help?? test it)
+  delay(100); // DON'T STARTLE THE SLEEPY (this seems to help?? test it)
 
 // >>>>    EEPROM STUFF  <<<<
   pinMode(EE_SS,OUTPUT);
   digitalWrite(EE_SS,HIGH);
-  pinMode(WP,OUTPUT);
-  digitalWrite(WP,LOW);	// protect status reg
-  pinMode(10,OUTPUT);
-  digitalWrite(10,HIGH);
+//  pinMode(WP,OUTPUT);
+//  digitalWrite(WP,LOW);	// protect status reg
+//  pinMode(10,OUTPUT);
+//  digitalWrite(10,HIGH);
 
   for(int i=0; i<totalFramesAvailable; i++){ // room for 100 frames in EEPROM
     frameAddress[i] = (i*5)*256;	// store the start address for each frame
   }
 
-  // CHECK SLEEPY STATE
-  feelSleepyState();
+
   // SETUP BUTTON STUFF button0 = sleepy; button1 = !sleepy; button2 = scroll stored gifs
   initButtons();  // set pin direction and take inital reading of buttons
   getStoredGifInfo(); // read metaData in EEPROM
+  // CHECK SLEEPY STATE
+//  feelSleepyState();
 
   if(!sleepy){
     display.begin();
     display.setRotation(0);
     sendLCDprompt();
-    Serial.println("\nHeartBone");
+    if(verbish){ Serial.println("\nHeartBone"); }
     printStoredGifInfo();  // print metaData to Serial
   }
 
+}// end of setup
+
+unsigned long thisBeat;
+int lastBeat;
+#define I 3000
+
+void heartBeat(){
+  thisBeat = millis();
+  if(thisBeat -lastBeat>I){
+    lastBeat = thisBeat;
+    Serial.println(thisBeat/1000);
+  }
 }
 
-
 void loop(){
-
+//if(verbish){ heartBeat(); }
       if(sleepy){
         drawNextFrameOfActiveGif(activeGifFrameCounter);
         activeGifFrameCounter++;  // advance to the next frame
@@ -142,7 +156,7 @@ void loop(){
         sleepyBytes[2] = activeGifFrameCounter;  // remember the frame we're on
         EEwriteSleepyBytes();  // really, remember it
         delay(10);
-        dog.sleep();  // 1.024 Seconds-ish
+//        dog.sleep();  // 1.024 Seconds-ish
         // sleeping
         delay(10);  // how does this help?
         // TEST PUTTING readButtons HERE
@@ -151,7 +165,6 @@ void loop(){
 
 
   if(sendGifToLCD){    // plays the acitveGif at a default frame rate
-
 //      if(eventSerial() > 0){return;}  // break out of playback??
       drawNextFrameOfActiveGif(activeGifFrameCounter);
       activeGifFrameCounter++;
@@ -159,7 +172,6 @@ void loop(){
       delay(120);  // needs delay derived from gif
       readButtons();  // check for sleepy state
       if(sleepy){return;}  // break out of this playback
-
   }
 
   if(loadingFrameBuffer){  // receive 'a' and send '!' to start this process
@@ -211,7 +223,7 @@ void loop(){
 
   if(!loadingFrameBuffer){  // don't get interrupted when you're loading a frame
     readButtons();  // button0 = sleepy, button1 = wake, button2 = play
-    eventSerial();
+    serialEvent();
   }
 
 
@@ -242,7 +254,7 @@ void getStoredGifInfo(){
   else{
     numberOfGifs = 0;
     EEwriteByte(metaDataStartEEdress,numberOfGifs);
-
+    hasGifs = false;
   }
   if(hasGifs){
     for(int i=0; i<numberOfGifs; i++){

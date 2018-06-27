@@ -4,12 +4,13 @@
     needs option to 'reflect' the gif (run forwards, then backwards, etc) memory doubler!
 */
 
-void eventSerial(){
+void serialEvent(){
   char requestedGifNumber;
 
   if(loadingFrameBuffer == false){
     if(Serial.available() > 0){
       char c = Serial.read();
+      Serial.write(c);Serial.println();
 
       switch(c){
         case 'a':  // receive 'a' to load  the next frame
