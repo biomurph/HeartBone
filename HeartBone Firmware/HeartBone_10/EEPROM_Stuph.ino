@@ -50,7 +50,7 @@ void EEreadBytes(int address, int numBytes)
   digitalWrite(EE_SS,LOW);
   display.spi.transfer(READ_EE);
   for(int i=2; i>=0; i--){
-    byte b = address>>(i*8);
+    byte b = address>>(i*8);	// This dummy byte is not used in the mpide version
     display.spi.transfer(b & 0xFF);  // send the address
   }
   for(int i=0; i<numBytes; i++){

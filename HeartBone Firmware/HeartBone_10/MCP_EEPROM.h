@@ -13,7 +13,7 @@
 #define RDID	0xAB	// release from deep power down (reads electronic signiture)
 #define DPD	0xB9	// deep power down
 
-//#define WP     6	// write protect pin 
+//#define WP     6	// write protect pin This is included in mpide version
 #define EE_SS  11 // EEPROM Slave Select pin
 
 uint8_t STATUS;     // EEPROM status reg

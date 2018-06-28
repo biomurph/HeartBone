@@ -32,7 +32,7 @@
     HeartBoneWatch
       portage of Adafruit_SharpMem library to DP_32
     MCP_EEPROM http://ww1.microchip.com/downloads/en/DeviceDoc/22064D.pdf
-      Writes and reads with the MCP25L1024 
+      Writes and reads with the MCP25L1024
 
   NEEDS
     a way to 'reflect' play frames forward and backward.
@@ -108,7 +108,7 @@ void setup(){  // here we go
 // >>>>    EEPROM STUFF  <<<<
   pinMode(EE_SS,OUTPUT);
   digitalWrite(EE_SS,HIGH);
-//  pinMode(WP,OUTPUT);
+//  pinMode(WP,OUTPUT);	// mpide includes these four lines
 //  digitalWrite(WP,LOW);	// protect status reg
 //  pinMode(10,OUTPUT);
 //  digitalWrite(10,HIGH);
@@ -117,12 +117,12 @@ void setup(){  // here we go
     frameAddress[i] = (i*5)*256;	// store the start address for each frame
   }
 
+  // CHECK SLEEPY STATE
+  // feelSleepyState();	mpide includes this line
 
   // SETUP BUTTON STUFF button0 = sleepy; button1 = !sleepy; button2 = scroll stored gifs
   initButtons();  // set pin direction and take inital reading of buttons
   getStoredGifInfo(); // read metaData in EEPROM
-  // CHECK SLEEPY STATE
-//  feelSleepyState();
 
   if(!sleepy){
     display.begin();

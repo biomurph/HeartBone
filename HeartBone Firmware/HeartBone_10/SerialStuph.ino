@@ -4,7 +4,7 @@
     needs option to 'reflect' the gif (run forwards, then backwards, etc) memory doubler!
 */
 
-void serialEvent(){
+void serialEvent(){	// mpide uses eventSerial
   char requestedGifNumber;
 
   if(loadingFrameBuffer == false){
