@@ -131,6 +131,8 @@ if(serialBoneFound){
             byteCounter++;
             if(byteCounter%256 == 0){
               println(byteCounter + " bytes sent");
+              // scroll();
+              // writeBoneData();
             }
             if(byteCounter == FRAME_LENGTH){  //
               sendingFrame = false;

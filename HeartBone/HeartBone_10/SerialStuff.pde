@@ -34,7 +34,7 @@ void eventSerial(){
       case '@':  // watch sends '@' to ask for the next frame
         byteCounter = 0;  // ??  FIND OUT WHERE THIS GETS SET AND DECIDE ON A PLACE
         frameNum++;
-        scrollString = " ";
+        scrollString = "";
         nextFrame = true;
         if(frameNum == gifFrames.length){
           frameNum = 0;
@@ -79,6 +79,6 @@ void writeBoneData(){
 
 void scroll(){
   boneString += '>'; boneString += ' ';
-  fill(txtFill);
-  text(boneString,indent,(feedbackTextLine + lineHeight));
+  // fill(txtFill);
+  // text(boneString,indent,(feedbackTextLine + lineHeight));
 }
