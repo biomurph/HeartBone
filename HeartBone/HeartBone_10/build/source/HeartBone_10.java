@@ -36,16 +36,17 @@ Serial bone;         // name of the serial port
 
 // FONT AND WATCH DATA FORMATTING
 PFont font;
-int txtFill = 255;
+PFont boneFont;
+int txtFill = 240;
 int textLine = 20;
 int lineHeight = 20;
 int lineStart = 210;
 int indent = 50;
 int feedbackTextLine;
-String bufferString = "";
-String boneString = "";
+String boneString = " ";
 boolean receivingFromBone = false;
-String scrollString = "";
+String scrollString = " ";
+boolean gotWatchData = false;
 
 // FRAME STUFF
 int frameNum = 0;  // used to step through frames
@@ -69,123 +70,121 @@ int availableFrames = 0;  // sourced from the watch EEPROM
 int LCDwidth = 96;
 int LCDheight = 96;
 
-
 StringList currentGif;
 int  gifNumber = 0;  // the gif on display
 String gifName;
 
 // SERIAL PORT STUFF TO HELP YOU FIND THE CORRECT SERIAL PORT
-String serialBone;
-String[] serialBones = new String[Serial.list().length];
-boolean serialBoneFound = false;
-boolean newBone = false;
+String serialPort;
+String[] serialPorts = new String[Serial.list().length];
+boolean serialPortFound = false;
 Radio[] button = new Radio[Serial.list().length*2];
-int numBones = serialBones.length;
-boolean refreshBones = true;
+int numPorts = serialPorts.length;
+boolean refreshPorts = false;
 
-int bgrnd = 50;
+//  COLORS
+int bgrnd = color(128,128,128);
+boolean rinseScreen = false;
+
 public void setup() {
   
   frameRate(60);
   font = loadFont("Monaco-16.vlw");
-  textFont(font, 16);
-  textAlign(LEFT);
+  textFont(font,16);
 
   loadGifs();  // get list of stored gifs from data file
   getCurrentGif(gifNumber);  // load th first gif to diplay on screen
   sendStartText();  // show prompts on console
-  // background(bgrnd);  // neutral grey background
-
-  // text("Select Your Serial Port",245,30);
-  // listAvailableBones();
 
   // START THE SHOW
-
-  // updateText();    // print commands and currentGif info to screen
-  // getWatchData(); // formats to sketch window
+  background(bgrnd);  // neutral grey background
+  fill(txtFill);
+  text("Select Your Serial Port",245,30);
+  listAvailablePorts();
 
 }
 
 
 public void draw() {
-  background(bgrnd);
-    updateText();    // print commands and currentGif or serial port list info to screen
+if(serialPortFound){
+  if(rinseScreen){ background(bgrnd); rinseScreen = false;}
 
-    image(gifFrames[frameNum], 0, 0);  // display 96x96 pix image from the data file in Sketch folder
+  updateText();
+  if(!gotWatchData){ getWatchData(); gotWatchData = true; }
+  image(gifFrames[frameNum], 0, 0);  // display 96x96 pix image from the data file in Sketch folder
 
-    if(playingGif){
-      if(millis() - startOfFrameMillis > delays[frameNum]){
-        frameNum++;
-        startOfFrameMillis = millis();
+  if(playingGif){
+    if(millis() - startOfFrameMillis > delays[frameNum]){
+      frameNum++;
+      startOfFrameMillis = millis();
 
-        if(frameNum == gifFrames.length){
-          frameNum = 0;
-  //        playingGif = false;  // just once please
-        }
+      if(frameNum == gifFrames.length){
+        frameNum = 0;
+//        playingGif = false;  // just once please
       }
-    }
-
-if(serialBoneFound){
-    if(nextFrame){    //
-      println("buffering");
-      bufferImage();  // load the frame into the frame buffer
-      byteCounter = 0;
-      bone.write('a');  // send the 'a' to then get a '!' and keep sending frames
-      nextFrame = false;  // reset nextFrame flag
-    }
-
-    if(sendingFrame == true){
-      if(byteCounter == 0){
-        bone.write(picData[byteCounter]);  // send the first byte
-        byteCounter++;
-        timeOut = millis();
-      }
-
-      while(sendingFrame == true){  //
-        if(bone.available() > 0){
-          char test = PApplet.parseChar(bone.read());
-  //        print(test);  // verbose
-          if(test == '*'){  // get a * from bone before sending next byte
-            bone.write(picData[byteCounter]);  // send the next byte
-            byteCounter++;
-            if(byteCounter%256 == 0){
-              println(byteCounter + " bytes sent");
-            }
-            if(byteCounter == FRAME_LENGTH){  //
-              sendingFrame = false;
-              byteCounter = 0;
-            }
-          }
-        }//end of if bone.available
-        delay(1);  // how small can this be?
-        if(millis() - timeOut > 10000){return;}  // break out if connection is lost
-      } // end of while sendingFrame
-    }
-
-    if(newBone){ newBone = false; getWatchData(); } // formats to sketch window
-    writeBoneData();
-
-    eventSerial();
-  //  checkKeys();
-  } else {
-    autoScanBones();
-
-    // if(refreshBones){
-    //   refreshBones = false;
-      listAvailableBones();
-    // }
-
-    for(int i=0; i<numBones; i++){  // add +1 to numBones if using 'Refresh Ports' button
-      button[i].overRadio(mouseX,mouseY);
-      button[i].displayRadio();
     }
   }
+
+  if(nextFrame){    //
+    println("buffering");
+    bufferImage();  // load the frame into the frame buffer
+    byteCounter = 0;
+    bone.write('a');  // send the 'a' to then get a '!' and keep sending frames
+    nextFrame = false;  // reset nextFrame flag
+  }
+
+  if(sendingFrame == true){
+    if(byteCounter == 0){
+      bone.write(picData[byteCounter]);  // send the first byte
+      byteCounter++;
+      timeOut = millis();
+    }
+
+    while(sendingFrame == true){  //
+      if(bone.available() > 0){
+        char test = PApplet.parseChar(bone.read());
+//        print(test);  // verbose
+        if(test == '*'){  // get a * from bone before sending next byte
+          bone.write(picData[byteCounter]);  // send the next byte
+          byteCounter++;
+          if(byteCounter%256 == 0){
+            println(byteCounter + " bytes sent");
+          }
+          if(byteCounter == FRAME_LENGTH){  //
+            sendingFrame = false;
+            byteCounter = 0;
+          }
+        }
+      }//end of if
+      delay(1);  // how small can this be?
+      if(millis() - timeOut > 10000){return;}  // break out if connection is lost
+    }// end of while
+  }
+
+  eventSerial();
+
+} else { // SCAN BUTTONS TO FIND THE SERIAL PORT
+
+  autoScanPorts();
+
+  if(refreshPorts){
+    refreshPorts = false;
+    listAvailablePorts();
+  }
+
+  for(int i=0; i<numPorts+1; i++){
+    button[i].overRadio(mouseX,mouseY);
+    button[i].displayRadio();
+  }
+
+}
+
 }  // end draw
 
 
 public int[] getDelays(String filename, int numFrames){
    GifDecoder gifDecoder = new GifDecoder();
-   gifDecoder.read(createInput(filename));
+   gifDecoder.read(createInput(filename));  // openStream(filename));
   // int n = gifDecoder.getFrameCount();
 
   for(int i=0; i<numFrames; i++){
@@ -195,7 +194,6 @@ public int[] getDelays(String filename, int numFrames){
 }
 
 
-
 // THIS NEEDS VARIANT TO SELECT ARBITRARY PIXEL IN FRAME
 // THIS NEEDS VARIANT TO SELECT PIXEL IN EACH INDIVIDUAL FRAME
 public void bufferImage(){
@@ -203,7 +201,7 @@ public void bufferImage(){
      int pix = 0;
      byte b;
 
-       if(frameNum == 0){  // lock the backgound color
+       if(frameNum == 0){  // lock the value of first pixel as backgound color
          switch(option){
            case 'a': case 'A':
              firstPixel = pixels[0];
@@ -246,6 +244,7 @@ public void sendStartText(){
   println("Press 'E' to erase the EEPROM");
   println("Press 'bb' to initiate gif load pixel inverted");
   println("Press 'E' to erase entire contents of EEPROM. No turning back!");
+	println("Press '=' to read stored data on watch");
 }
 
 public void updateText(){
@@ -254,21 +253,17 @@ public void updateText(){
   gifName = currentGif.get(gifNumber);
   gifName = gifName.substring(0,gifName.length()-4);
   text(gifName,10,120);
-  text("Gif " + (gifNumber+1) + " of " + currentGif.size() + " has "+gifFrames.length + " frames  Frame Rate: " + delays[0],lineStart,textLine+=lineHeight);
-  text("Use UP DOWN to select gif",lineStart,(textLine+=lineHeight));
-  textLine+=lineHeight;
+  // println("lineStart " + lineStart);
   text("press 'p' to toggle gif animation on/off",lineStart,(textLine+=lineHeight));
   text("press 'P' to print frame in 1s & 0s to terminal",lineStart,(textLine+=lineHeight));
   text("press 'l' to advance gif one frame with rollover",lineStart,(textLine+=lineHeight));
-  if(serialBoneFound){
-    text("Press 'a' to initiate gif load pixel true",lineStart,(textLine+=lineHeight));
-    text("Press 'A' to initiate gif load pixel inverted",lineStart,(textLine+=lineHeight));
-    text("Press 'E' to erase the EEPROM. No turning back!",lineStart,(textLine+=lineHeight));
-    text("Press '1' -- '9' to play stored gifs listed below",lineStart,(textLine+=lineHeight));
-  }
-  // textLine +=lineHeight*3;  // add a space
-  // text("Gif " + (gifNumber+1) + " of " + currentGif.size() + " has "+gifFrames.length + " frames  Frame Rate: " + delays[0],indent,textLine+=lineHeight);
-  // text("Use UP DOWN to select gif",indent,(textLine+=lineHeight));
+  text("Press 'a' to initiate gif load pixel true",lineStart,(textLine+=lineHeight));
+  text("Press 'A' to initiate gif load pixel inverted",lineStart,(textLine+=lineHeight));
+  text("Press 'E' to erase the EEPROM. No turning back!",lineStart,(textLine+=lineHeight));
+	text("Press '=' to read stored data on watch",lineStart,(textLine+=lineHeight));
+  textLine+=lineHeight;  // add a space
+  text("Gif " + (gifNumber+1) + " of " + currentGif.size() + " has "+gifFrames.length + " frames  Frame Rate: " + delays[0],indent,textLine+=lineHeight);
+  text("Use UP DOWN to select gif",indent,(textLine+=lineHeight));
 
   feedbackTextLine = textLine + lineHeight;  // advance the line, expecting to write watch data soon
 
@@ -292,56 +287,100 @@ public void getCurrentGif(int name){
 
 
 public void getWatchData(){
-  fill(txtFill);
-//  feedbackTextLine = textLine+=lineHeight;
-//  text("Contents of EEPROM:",indent,(feedbackTextLine+=lineHeight));
-  bone.write('=');  // sending = makes watch barf eeprom contents
+  if(serialPortFound){
+		// gotWatchData = true;
+    fill(txtFill);
+    feedbackTextLine = textLine+=lineHeight;
+    text("Contents of EEPROM:",indent,(feedbackTextLine+=lineHeight));
+    bone.write('=');  // sending = makes watch barf eeprom contents
+  } else {
+    println("Error: Couldn't getWatcData 'cause no serialPortFound");
+  }
 }
 
-public void listAvailableBones(){
-  // println(Serial.list());    // print a list of available serial ports to the console
-  serialBones = Serial.list();
-  fill(250,0,250);
-  feedbackTextLine += 50;
-  text("Select Your Serial Port",245,feedbackTextLine);
-  feedbackTextLine+=25;
-  fill(txtFill);
+
+public void listAvailablePorts(){
+  println(Serial.list());    // print a list of available serial ports to the console
+  serialPorts = Serial.list();
+  fill(0);
+  // textFont(font);
+  textAlign(LEFT);
+  // set a counter to list the ports backwards
   int yPos = 0;
   int xPos = 35;
-  for(int i=serialBones.length-1; i>=0; i--){
-    button[i] = new Radio(xPos, feedbackTextLine+(yPos*20),12,color(180),color(80),color(255),i,button);
-    text(serialBones[i],xPos+15, feedbackTextLine+5+(yPos*20));
+  for(int i=serialPorts.length-1; i>=0; i--){
+    button[i] = new Radio(xPos, 95+(yPos*20),12,color(180),color(80),color(255),i,button);
+    text(serialPorts[i],xPos+15, 100+(yPos*20));
 
     yPos++;
     if(yPos > height-30){
       yPos = 0; xPos+=200;
     }
   }
-  // int p = numBones;
-  //  fill(233,0,0);
-  // button[p] = new Radio(35, feedbackTextLine+(yPos*20),12,color(180),color(80),color(255),p,button);
-  //   text("Refresh Serial Port List",50, feedbackTextLine+5+(yPos*20));
+  int p = numPorts;
+   fill(txtFill);
+   button[p] = new Radio(35, 95+(yPos*20),12,color(180),color(80),color(255),p,button);
+   text("Refresh Serial Ports List",50, 100+(yPos*20));
 
 }
 
-public void autoScanBones(){
-  if(Serial.list().length != numBones){
-    if(Serial.list().length > numBones){
+public void autoScanPorts(){
+  if(Serial.list().length != numPorts){
+    if(Serial.list().length > numPorts){
       println("New Ports Opened!");
-      int diff = Serial.list().length - numBones;	// was serialPorts.length
-      serialBones = expand(serialBones,diff);
-      numBones = Serial.list().length;
-    }else if(Serial.list().length < numBones){
+      int diff = Serial.list().length - numPorts;	// was serialPorts.length
+      serialPorts = expand(serialPorts,diff);
+      numPorts = Serial.list().length;
+    }else if(Serial.list().length < numPorts){
       println("Some Ports Closed!");
-      numBones = Serial.list().length;
+      numPorts = Serial.list().length;
     }
-    refreshBones = true;
+    refreshPorts = true;
     return;
   }
 }
+public void mousePressed(){
 
+  if(!serialPortFound){
+    for(int i=0; i<=numPorts; i++){
+      if(button[i].pressRadio(mouseX,mouseY)){
+        if(i == numPorts){
+          if(Serial.list().length > numPorts){
+            println("New Ports Opened!");
+            int diff = Serial.list().length - numPorts;	// was serialPorts.length
+            serialPorts = expand(serialPorts,diff);
+            //button = (Radio[]) expand(button,diff);
+            numPorts = Serial.list().length;
+          }else if(Serial.list().length < numPorts){
+            println("Some Ports Closed!");
+            numPorts = Serial.list().length;
+          }else if(Serial.list().length == numPorts){
+            return;
+          }
+          refreshPorts = true;
+          return;
+        }else
 
-//void checkKeys(){
+        try{
+          bone = new Serial(this, Serial.list()[i], 115200);  // make sure Arduino is talking serial at this baud rate
+          delay(1000);
+          println(bone.read());
+          bone.clear();            // flush buffer
+          bone.bufferUntil('\n');  // set buffer full flag on receipt of carriage return
+          serialPortFound = true;
+					rinseScreen = true;
+        }
+        catch(Exception e){
+          println("Couldn't open port " + Serial.list()[i]);
+          fill(255,0,0);
+          text("Couldn't open port " + Serial.list()[i],60,70);
+
+        }
+      }
+    }
+  }
+}
+
 public void keyPressed() {
   char token = key;
   switch(token){
@@ -355,11 +394,7 @@ public void keyPressed() {
 
     case 'a': case 'A': case 'c': // Serial back and forth to trigger frame sending
       if(!enoughMemory()){return;}
-      if(serialBoneFound){
-        setOption(token);
-      } else {
-        println("No Bone Connected!");
-      }
+      setOption(token);
       break;
 
 //    case 'A':   // invert the pixel values
@@ -381,27 +416,15 @@ public void keyPressed() {
       playingGif = !playingGif;  // toggle the boolean?
       break;
     case '=':
-      if(serialBoneFound){
-        getWatchData();
-      } else {
-        println("No Bone Connected!");
-      }
+      getWatchData();
       break;
     case '0': case '1': case'2': case'3': case'4': case'5': case'6': case'7': case'8': case'9':
-      if(serialBoneFound){
-        //    The gif number is sent to the watch
-        bone.write(token);
-        getWatchData();
-      } else {
-        println("No Bone Connected!");
-      }
+//    The gif number is sent to the watch
+      bone.write(token);
+      getWatchData();
       break;
     case 'E':
-      if(serialBoneFound){
-        bone.write(token);  // ERASE EEPROM ON WATCH!
-      } else {
-        println("No Bone Connected!");
-      }
+      bone.write(token);  // ERASE EEPROM ON WATCH!
       break;
     default:
       break;
@@ -418,11 +441,8 @@ public void keyPressed() {
         getCurrentGif(gifNumber);
         frameNum = 0;
         background(bgrnd);
-        refreshBones = true;
         updateText();
-        if(serialBoneFound){
-          getWatchData();
-        }
+        // getWatchData();
         break;
       case DOWN:
         gifNumber--;
@@ -433,11 +453,8 @@ public void keyPressed() {
         getCurrentGif(gifNumber);
         frameNum = 0;
         background(bgrnd);
-        refreshBones = true;
         updateText();
-        if(serialBoneFound){
-          getWatchData();
-        }
+        // getWatchData();
         break;
       default:
         break;
@@ -501,25 +518,18 @@ public boolean enoughMemory(){
 
 public void eventSerial(){
   if(!sendingFrame){
-    String s = "";
   while(bone.available() > 0){
     char inChar = PApplet.parseChar(bone.read());
-    // print(inChar);
+    print(inChar);
 
     if(receivingFromBone){   // do this when we get a '#' as prefix
-      if(inChar == '$'){
-        receivingFromBone = false;
-        boneString = "";
-        boneString = bufferString;
-        bufferString = "";
-        return;   // receiving is done
-
-      // if(inChar == '\n'){    // TRY SWAPPING THE $ AND \n TO MAKE THE BONE CODE NICER
-      //   writeBoneData();     // write the line when you get the '\n'
-      //   boneString = " ";
+      if(inChar == '\n'){    // TRY SWAPPING THE $ AND \n TO MAKE THE BONE CODE NICER
+        writeBoneData();     // write the line when you get the '\n'
+        boneString = " ";
       }else{
-        bufferString += inChar;  // or, save the char to the string
+        boneString+=inChar;  // or, save the char to the string
       }
+      if(inChar == '$'){receivingFromBone = false;   boneString = " ";}  // receiving is done
 //      return;  // this really slows it down...
     }
     else  // when not receiving data from watch look for command characters
@@ -550,11 +560,9 @@ public void eventSerial(){
         receivingFromBone = true;
         break;
       case '=':
-        while(bone.available() > 0){
-          s += PApplet.parseByte(bone.read());
-        }
-          availableFrames = PApplet.parseInt(s);
-          print(" " + availableFrames + " frames available");
+        while(bone.available() == 0){}
+        availableFrames = PApplet.parseInt(bone.read());
+        print(" " + availableFrames + " frames available");
         break;
       case '~':
         while(bone.available() == 0){}
@@ -607,53 +615,6 @@ public void loadGifs(){
   //currentGif.append("");
 
 }
-public void mousePressed(){
-
-  if(!serialBoneFound){
-    for(int i=0; i<numBones; i++){
-      if(button[i].pressRadio(mouseX,mouseY)){
-        // if(i == numBones){
-        //   if(Serial.list().length > numBones){
-        //     println("New Ports Opened!");
-        //     int diff = Serial.list().length - numBones;	// was serialPorts.length
-        //     serialBones = expand(serialBones,diff);
-        //     //button = (Radio[]) expand(button,diff);
-        //     numBones = Serial.list().length;
-        //   }else if(Serial.list().length < numBones){
-        //     println("Some Ports Closed!");
-        //     numBones = Serial.list().length;
-        //   }else if(Serial.list().length == numBones){
-        //     return;
-        //   }
-        //   refreshBones = true;
-        //   return;
-        // }else
-
-        try{
-          bone = new Serial(this, Serial.list()[i], 115200);  // make sure Arduino is talking serial at this baud rate
-          delay(1000);
-          println(bone.read());
-          bone.clear();            // flush buffer
-          bone.bufferUntil('\n');  // set buffer full flag on receipt of carriage return
-          serialBoneFound = true;
-          newBone = true;
-        }
-        catch(Exception e){
-          println("Couldn't open port " + Serial.list()[i]);
-          fill(255,0,0);
-          text("Couldn't open port " + Serial.list()[i],200,400);
-          fill(txtFill);
-        }
-      }
-    }
-  }
-}
-
-public void mouseReleased(){
-
-}
-
-
 class Radio {
   int _x,_y;
   int size, dotSize;
@@ -677,7 +638,7 @@ class Radio {
   public boolean pressRadio(float mx, float my){
     if (dist(_x, _y, mx, my) < size/2){
       pressed = true;
-      for(int i=0; i<numBones; i++){  // add +1 to numBones if using 'Refresh Ports' button
+      for(int i=0; i<numPorts+1; i++){
         if(i != me){ radios[i].pressed = false; }
       }
       return true;
@@ -689,7 +650,7 @@ class Radio {
   public boolean overRadio(float mx, float my){
     if (dist(_x, _y, mx, my) < size/2){
       over = true;
-      for(int i=0; i<numBones; i++){  // add +1 to numBones if using 'Refresh Ports' button
+      for(int i=0; i<numPorts+1; i++){
         if(i != me){ radios[i].over = false; }
       }
       return true;

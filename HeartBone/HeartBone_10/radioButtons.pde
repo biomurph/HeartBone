@@ -1,5 +1,3 @@
-
-
 class Radio {
   int _x,_y;
   int size, dotSize;
@@ -23,7 +21,7 @@ class Radio {
   boolean pressRadio(float mx, float my){
     if (dist(_x, _y, mx, my) < size/2){
       pressed = true;
-      for(int i=0; i<numBones; i++){  // add +1 to numBones if using 'Refresh Ports' button
+      for(int i=0; i<numPorts+1; i++){
         if(i != me){ radios[i].pressed = false; }
       }
       return true;
@@ -35,7 +33,7 @@ class Radio {
   boolean overRadio(float mx, float my){
     if (dist(_x, _y, mx, my) < size/2){
       over = true;
-      for(int i=0; i<numBones; i++){  // add +1 to numBones if using 'Refresh Ports' button
+      for(int i=0; i<numPorts+1; i++){
         if(i != me){ radios[i].over = false; }
       }
       return true;

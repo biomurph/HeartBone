@@ -2,25 +2,18 @@
 
 void eventSerial(){
   if(!sendingFrame){
-    String s = "";
   while(bone.available() > 0){
     char inChar = char(bone.read());
-    // print(inChar);
+    print(inChar);
 
     if(receivingFromBone){   // do this when we get a '#' as prefix
-      if(inChar == '$'){
-        receivingFromBone = false;
-        boneString = "";
-        boneString = bufferString;
-        bufferString = "";
-        return;   // receiving is done
-
-      // if(inChar == '\n'){    // TRY SWAPPING THE $ AND \n TO MAKE THE BONE CODE NICER
-      //   writeBoneData();     // write the line when you get the '\n'
-      //   boneString = " ";
+      if(inChar == '\n'){    // TRY SWAPPING THE $ AND \n TO MAKE THE BONE CODE NICER
+        writeBoneData();     // write the line when you get the '\n'
+        boneString = " ";
       }else{
-        bufferString += inChar;  // or, save the char to the string
+        boneString+=inChar;  // or, save the char to the string
       }
+      if(inChar == '$'){receivingFromBone = false;   boneString = " ";}  // receiving is done
 //      return;  // this really slows it down...
     }
     else  // when not receiving data from watch look for command characters
@@ -51,11 +44,9 @@ void eventSerial(){
         receivingFromBone = true;
         break;
       case '=':
-        while(bone.available() > 0){
-          s += byte(bone.read());
-        }
-          availableFrames = int(s);
-          print(" " + availableFrames + " frames available");
+        while(bone.available() == 0){}
+        availableFrames = int(bone.read());
+        print(" " + availableFrames + " frames available");
         break;
       case '~':
         while(bone.available() == 0){}
