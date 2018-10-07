@@ -543,7 +543,7 @@ public void eventSerial(){
       case '@':  // watch sends '@' to ask for the next frame
         byteCounter = 0;  // ??  FIND OUT WHERE THIS GETS SET AND DECIDE ON A PLACE
         frameNum++;
-        scrollString = " ";
+        scrollString = "";
         nextFrame = true;
         if(frameNum == gifFrames.length){
           frameNum = 0;
@@ -586,8 +586,8 @@ public void writeBoneData(){
 
 public void scroll(){
   boneString += '>'; boneString += ' ';
-  fill(txtFill);
-  text(boneString,indent,(feedbackTextLine + lineHeight));
+  // fill(txtFill);
+  // text(boneString,indent,(feedbackTextLine + lineHeight));
 }
 
 // add more gifs to the library by placing in the data folder and appending here
