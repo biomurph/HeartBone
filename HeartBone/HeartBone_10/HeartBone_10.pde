@@ -150,6 +150,7 @@ if(serialPortFound){
 
   if(refreshPorts){
     refreshPorts = false;
+		background(bgrnd);
     listAvailablePorts();
   }
 

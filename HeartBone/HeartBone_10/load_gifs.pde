@@ -21,6 +21,8 @@ void loadGifs(){
   currentGif.append("lockDown.gif");
   currentGif.append("drop.gif");
   currentGif.append("earth.gif");
-  //currentGif.append("");
+	currentGif.append("set3o2_1_87.gif");
+  currentGif.append("set3o2_2_90.gif");
+  currentGif.append("set3o2_4c_96.gif");
 
 }
